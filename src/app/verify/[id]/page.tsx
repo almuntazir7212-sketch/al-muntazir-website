@@ -23,13 +23,14 @@ import { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 interface Props {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const certId = decodeURIComponent(params.id);
+  const { id } = await params;
+  const certId = decodeURIComponent(id);
   return {
     title: `Verify Certificate ${certId} | Al-Muntazir Technical Center`,
     description: `Official digital verification of technical training certificate ${certId} issued by Al-Muntazir Technical Training & Trade Center Kot Addu.`,
@@ -188,7 +189,8 @@ async function getCertificate(id: string): Promise<CertificateRecord | null> {
 }
 
 export default async function VerifyPage({ params }: Props) {
-  const certId = decodeURIComponent(params.id);
+  const { id } = await params;
+  const certId = decodeURIComponent(id);
   const cert = await getCertificate(certId);
 
   // If certificate not found or revoked
