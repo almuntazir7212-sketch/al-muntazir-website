@@ -78,3 +78,27 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #94741f;
 }
+
+/* Subtle WhatsApp Ripple Animation */
+@keyframes whatsapp-ripple {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.whatsapp-ripple-1 {
+  animation: whatsapp-ripple 2.8s cubic-bezier(0.1, 0.45, 0.1, 1) infinite;
+}
+
+.whatsapp-ripple-2 {
+  animation: whatsapp-ripple 2.8s cubic-bezier(0.1, 0.45, 0.1, 1) infinite;
+  animation-delay: 1.4s;
+}
