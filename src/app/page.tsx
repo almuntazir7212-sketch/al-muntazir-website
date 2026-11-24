@@ -243,7 +243,7 @@ export default function HomePage() {
               Institution Credibility
             </span>
             <h2 className="text-2xl sm:text-4xl font-black font-heading text-navy-900 tracking-tight">
-              Why Al-Muntazir Technical Center
+              Why Al-Muntazir Technical Training &amp; Trade Center
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">
               We provide recognized credentials and authentic technical expertise that employers rely upon.

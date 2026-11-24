@@ -39,7 +39,7 @@ export default function Footer() {
               </div>
               <div>
                 <p className="text-xs uppercase font-extrabold tracking-wider text-gold">Main Campus Kot Addu</p>
-                <p className="text-sm font-bold text-white">88 Road, Near Benazir Office</p>
+                <p className="text-sm font-bold text-white">88 Road, Near Benazir Income Support Office, Building Old Nadra Office, Kot Addu</p>
               </div>
             </div>
           </div>

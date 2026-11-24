@@ -107,17 +107,20 @@ export default function CertificateRenderer({ certificate }: Props) {
     }
 
     // 4. Institute Logo (Top-Left 76x76 pt)
+    const logoX = 54 * scale;
+    const logoY = 50 * scale;
+    const logoSize = 78 * scale;
     try {
       const logoImg = await loadImage("/images/logo.png");
-      const logoX = 54 * scale;
-      const logoY = 50 * scale;
-      const logoSize = 78 * scale;
       ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
     } catch {
       // ignore logo error
     }
 
     // 5. QR Code in Top-Right Corner with Certificate ID below it
+    const qrSize = 74 * scale;
+    const qrX = CANVAS_WIDTH - innerMargin - qrSize - 18 * scale;
+    const qrY = 48 * scale;
     try {
       const verifyUrl = `https://${INSTITUTE.domain}/verify/${certificate.certificate_id}`;
       const qrDataUrl = await QRCode.toDataURL(verifyUrl, {
@@ -129,9 +132,6 @@ export default function CertificateRenderer({ certificate }: Props) {
         },
       });
       const qrImg = await loadImage(qrDataUrl);
-      const qrSize = 74 * scale;
-      const qrX = CANVAS_WIDTH - innerMargin - qrSize - 18 * scale;
-      const qrY = 48 * scale;
       ctx.drawImage(qrImg, qrX, qrY, qrSize, qrSize);
 
       // Certificate ID below QR code: stylish Navy Bold with Gold accent
@@ -148,32 +148,49 @@ export default function CertificateRenderer({ certificate }: Props) {
       // ignore qr error
     }
 
-    // 6. Institute Header Text: Perfectly Centered on the Page Width
+    // 6. Institute Header Text: Fits completely between logo and QR code
+    const titleText = "AL-MUNTAZIR TECHNICAL TRAINING & TRADE CENTER";
+    const logoRightEdge = logoX + logoSize;
+    const qrLeftEdge = qrX;
+    const safetyMargin = 22 * scale;
+    const maxHalfWidth = Math.min(
+      CANVAS_WIDTH / 2 - (logoRightEdge + safetyMargin),
+      (qrLeftEdge - safetyMargin) - CANVAS_WIDTH / 2
+    );
+    const maxTitleWidth = maxHalfWidth * 2;
+
+    let titleFontSizePt = 22;
+    ctx.font = `bold ${titleFontSizePt * scale}px "Times New Roman", Times, serif`;
+    while (ctx.measureText(titleText).width > maxTitleWidth && titleFontSizePt > 12) {
+      titleFontSizePt -= 0.25;
+      ctx.font = `bold ${titleFontSizePt * scale}px "Times New Roman", Times, serif`;
+    }
+
     ctx.textAlign = "center";
     ctx.fillStyle = "#0B2C4D";
-    ctx.font = `bold ${24 * scale}px "Times New Roman", Times, serif`;
-    ctx.fillText(
-      "AL-MUNTAZIR TECHNICAL TRAINING & TRADE CENTER",
-      CANVAS_WIDTH / 2,
-      76 * scale
-    );
+    ctx.fillText(titleText, CANVAS_WIDTH / 2, 76 * scale);
 
     // Decorative Gold divider line below header
+    const titleWidth = ctx.measureText(titleText).width;
+    const dividerWidth = Math.min(titleWidth + 16 * scale, maxTitleWidth);
     ctx.strokeStyle = "#B08D2A";
     ctx.lineWidth = 1.2 * scale;
     ctx.beginPath();
-    ctx.moveTo(CANVAS_WIDTH / 2 - 280 * scale, 85 * scale);
-    ctx.lineTo(CANVAS_WIDTH / 2 + 280 * scale, 85 * scale);
+    ctx.moveTo(CANVAS_WIDTH / 2 - dividerWidth / 2, 85 * scale);
+    ctx.lineTo(CANVAS_WIDTH / 2 + dividerWidth / 2, 85 * scale);
     ctx.stroke();
 
     // Institute Address
+    const addressText =
+      "Pull 88 Road, Near Benazir Income Support Office, Building Old Nadra Office, Kot Addu";
+    let addressFontSizePt = 12.5;
+    ctx.font = `normal ${addressFontSizePt * scale}px "Times New Roman", Times, serif`;
+    while (ctx.measureText(addressText).width > maxTitleWidth && addressFontSizePt > 9) {
+      addressFontSizePt -= 0.25;
+      ctx.font = `normal ${addressFontSizePt * scale}px "Times New Roman", Times, serif`;
+    }
     ctx.fillStyle = "#555555";
-    ctx.font = `normal ${12.5 * scale}px "Times New Roman", Times, serif`;
-    ctx.fillText(
-      "Pull 88 Road, Near Benazir Income Support Office, Building Old Nadra Office, Kot Addu",
-      CANVAS_WIDTH / 2,
-      100 * scale
-    );
+    ctx.fillText(addressText, CANVAS_WIDTH / 2, 100 * scale);
 
     // 7. Body Text Certifications
     // "This is to certify that" (Times-Italic, 17 pt, #1A1A1A)

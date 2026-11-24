@@ -16,7 +16,7 @@ import { INSTITUTE } from "@/data/institute";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Us | Al-Muntazir Technical Training Center Kot Addu",
+  title: "About Us | Al-Muntazir Technical Training & Trade Center",
   description:
     "Learn about Al-Muntazir Technical Training & Trade Center, Kot Addu. Founded and supervised by Haji Imdad Hussain. Government Licence H.213918-6, Trade Mark No. 909294.",
 };
@@ -35,7 +35,7 @@ export default function AboutPage() {
             <span>Institute Heritage & Leadership</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black font-heading text-white tracking-tight">
-            About Al-Muntazir Technical Center
+            About Al-Muntazir Technical Training & Trade Center
           </h1>
           <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto mt-3 leading-relaxed">
             Delivering high-caliber technical craftsmanship and certified trade training in Kot Addu under Government Licence No. {INSTITUTE.licenceNo}.
@@ -103,7 +103,7 @@ export default function AboutPage() {
                     Haji Imdad Hussain
                   </h3>
                   <p className="text-xs text-gold font-bold">Project Incharge & Owner</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">Al-Muntazir Technical Training Center</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Al-Muntazir Technical Training & Trade Center</p>
                 </div>
               </div>
 

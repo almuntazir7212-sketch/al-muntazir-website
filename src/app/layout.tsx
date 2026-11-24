@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(`https://${INSTITUTE.domain}`),
   title: {
     default: "Al-Muntazir Technical Training & Trade Center Kot Addu | Welding, Electrician, Plumber Courses",
-    template: "%s | Al-Muntazir Technical Training Center Kot Addu",
+    template: "%s | Al-Muntazir Technical Training & Trade Center",
   },
   description:
     "Government Licensed (Licence H.213918-6, Trade Mark 909294) technical training institute in Kot Addu. Intensive practical training in Multi Welder, Argon Welder, 6GR Welder, Pipe Fitter, Industrial Electrician, Plumber with online QR-verified certificates.",

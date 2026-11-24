@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const certId = decodeURIComponent(id);
   return {
-    title: `Verify Certificate ${certId} | Al-Muntazir Technical Center`,
+    title: `Verify Certificate ${certId} | Al-Muntazir Technical Training & Trade Center`,
     description: `Official digital verification of technical training certificate ${certId} issued by Al-Muntazir Technical Training & Trade Center Kot Addu.`,
     robots: {
       index: false, // Per guide, verification pages are excluded from search engine index

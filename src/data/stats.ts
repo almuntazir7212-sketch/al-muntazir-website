@@ -12,7 +12,7 @@ export const STATS: StatItem[] = [
   },
   {
     value: "2–5",
-    label: "Months Durations",
+    label: "Months Duration",
     highlight: "Accelerated Practical Training",
   },
   {
@@ -23,6 +23,6 @@ export const STATS: StatItem[] = [
   {
     value: "Kot Addu",
     label: "Training Center",
-    highlight: "Near Benazir Office, 88 Road",
+    highlight: "88 Road, Near Benazir Income Support Office, Building Old Nadra Office, Kot Addu",
   },
 ];
