@@ -1,188 +1,176 @@
-import { Metadata } from "next";
-import { COURSES, INSTITUTE_INFO, getWhatsAppAdmissionUrl } from "@/lib/constants";
-import CourseCard from "@/components/CourseCard";
-import { ShieldCheck, MessageCircle, Wrench, Award, CheckCircle2 } from "lucide-react";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Courses — Al-Muntazir Technical Training Center Kot Addu | 12 Technical Trades",
-  description:
-    "Explore all 12 certified technical trade courses at Al-Muntazir TTC Kot Addu: Multi Welder, Argon (TIG), Electric Welder, 6GR Welder, Pipe Fitter, Pipe Fabricator, Industrial Electrician, Plumber, and more. Practical workshop training with QR-verified certificates.",
-  openGraph: {
-    title: "All 12 Technical Training Courses | Al-Muntazir TTC Kot Addu",
-    description: "Hands-on workshop courses in Welding, Piping, Electrical, and Safety in Kot Addu. Government Licence H.213918-6.",
-    url: `https://${INSTITUTE_INFO.domain}/courses`,
-  },
-};
+import React, { useState } from "react";
+import {
+  Clock,
+  MessageCircle,
+  FileText,
+  ShieldCheck,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  BookOpen,
+} from "lucide-react";
+import { COURSES, Course } from "@/data/courses";
+import { INSTITUTE } from "@/data/institute";
+import { useAdmissionModal } from "@/components/AdmissionContext";
+import { getWhatsAppUrl, buildCourseInquiryMessage } from "@/lib/utils";
 
 export default function CoursesPage() {
-  const weldingCourses = COURSES.filter((c) => c.category === "Welding");
-  const pipingCourses = COURSES.filter((c) => c.category === "Piping");
-  const electricalCourses = COURSES.filter((c) => c.category === "Electrical");
-  const technicalCourses = COURSES.filter((c) => c.category === "Technical");
+  const { openModal } = useAdmissionModal();
+  const [expandedCourse, setExpandedCourse] = useState<string | null>(null);
+
+  const toggleExpand = (courseId: string) => {
+    setExpandedCourse(expandedCourse === courseId ? null : courseId);
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Page Header Banner */}
-      <section className="bg-navy text-white py-14 sm:py-20 border-b-4 border-gold relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#B08D2A_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+    <div className="w-full bg-white">
+      {/* Page Header (Navy + Gold) */}
+      <section className="bg-navy-950 text-white py-14 sm:py-20 border-b-2 border-gold-brand relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-950 via-navy-900 to-navy-950 opacity-95" />
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-gold/10 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
-          <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gold/20 text-gold-300 text-xs font-semibold tracking-wider uppercase border border-gold/40">
-              <ShieldCheck className="w-4 h-4 text-gold" />
-              <span>12 Certified Technical Disciplines</span>
-            </div>
-
-            <h1 className="text-3xl sm:text-5xl font-black font-heading tracking-tight text-white">
-              All Technical Trade Courses
-            </h1>
-            <p className="font-urdu text-xl sm:text-2xl font-bold text-gold" dir="rtl">
-              المنتظر ٹیکنیکل ٹریننگ سینٹر کے تمام ۱۲ تکنیکی کورسز
-            </p>
-
-            <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Every course at Al-Muntazir TTC is designed with an 80% practical workshop syllabus. Students receive intensive hands-on experience under the mentorship of industry veterans, graduating with an officially recognized, QR-verified technical certificate.
-            </p>
-
-            <div className="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-300">
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-gold" />
-                Govt. Licence No. {INSTITUTE_INFO.licenceNo}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Award className="w-4 h-4 text-gold" />
-                QR-Verified Certificate on Completion
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Wrench className="w-4 h-4 text-gold" />
-                No Theory-Only Classes — 100% Workshop Ready
-              </span>
-            </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/15 border border-gold-brand/40 text-gold-light text-xs font-bold uppercase tracking-widest mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-gold" />
+            <span>Comprehensive Trade Curriculum</span>
           </div>
+          <h1 className="text-3xl sm:text-5xl font-black font-heading text-white tracking-tight">
+            Certified Technical Courses
+          </h1>
+          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto mt-3 leading-relaxed">
+            All 12 technical trades offered at Al-Muntazir Technical Training & Trade Center. Every program combines rigorous workshop practice with official QR-verified credentials.
+          </p>
         </div>
       </section>
 
-      {/* Courses Grid Content */}
-      <section className="py-12 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 space-y-16">
-        {/* Category: Welding Trades */}
-        <div>
-          <div className="border-b-2 border-slate-200 pb-4 mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-gold-700">
-                Category 01
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold font-heading text-navy flex items-center gap-2">
-                <span>Welding Trades</span>
-                <span className="font-urdu text-lg font-semibold text-gold-700" dir="rtl">ویلڈنگ ٹریڈز</span>
-              </h2>
+      {/* Courses Grid */}
+      <section className="py-14 sm:py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {COURSES.map((course: Course) => {
+              const isExpanded = expandedCourse === course.id;
+              const whatsappUrl = getWhatsAppUrl(
+                buildCourseInquiryMessage(course.name),
+                INSTITUTE.primaryWhatsAppClean
+              );
+
+              return (
+                <div
+                  id={course.id}
+                  key={course.id}
+                  className="gold-border-card rounded-2xl p-6 flex flex-col justify-between scroll-mt-24"
+                >
+                  <div>
+                    {/* Top Meta */}
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-navy-900 text-gold text-xs font-extrabold uppercase tracking-wider">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>{course.duration}</span>
+                      </span>
+                      {course.badge && (
+                        <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-gold/15 text-navy-900 border border-gold-brand/40">
+                          {course.badge}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Course Title */}
+                    <h2 className="text-xl sm:text-2xl font-black font-heading text-navy-900 tracking-tight mb-2">
+                      {course.name}
+                    </h2>
+
+                    {/* Description */}
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+                      {course.shortDescription}
+                    </p>
+
+                    {/* Verified Subjects Accordion */}
+                    <div className="border border-slate-200 rounded-xl overflow-hidden bg-white mb-6">
+                      <button
+                        onClick={() => toggleExpand(course.id)}
+                        className="w-full px-3.5 py-2.5 text-left flex items-center justify-between gap-2 bg-slate-50 hover:bg-slate-100/80 transition text-xs font-bold text-navy-900"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <BookOpen className="w-3.5 h-3.5 text-gold-brand" />
+                          <span>Curriculum & Subjects ({course.subjects.length})</span>
+                        </span>
+                        {isExpanded ? (
+                          <ChevronUp className="w-4 h-4 text-slate-500" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 text-slate-500" />
+                        )}
+                      </button>
+
+                      {isExpanded && (
+                        <div className="p-3 bg-white border-t border-slate-100">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-56 overflow-y-auto pr-1">
+                            {course.subjects.map((subj, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-start gap-1.5 text-[11px] text-slate-600 leading-snug"
+                              >
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0 mt-0.5" />
+                                <span>{subj}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions: Apply on WhatsApp + Online Form Modal */}
+                  <div className="space-y-2 pt-4 border-t border-slate-100">
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2.5 px-4 rounded-xl bg-brandGreen hover:bg-brandGreen-hover text-white text-xs sm:text-sm font-extrabold uppercase tracking-wide flex items-center justify-center gap-2 shadow-sm transition active:scale-95"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Apply on WhatsApp</span>
+                    </a>
+
+                    <button
+                      onClick={() => openModal(course.name)}
+                      className="w-full py-2 px-4 rounded-xl bg-navy-50 hover:bg-navy-100 text-navy-900 text-xs font-bold transition flex items-center justify-center gap-2"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-gold-brand" />
+                      <span>Fill Online Admission Form</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Bottom Trust Banner */}
+          <div className="mt-16 bg-navy-900 text-white rounded-2xl p-8 sm:p-10 border border-gold-brand/40 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="max-w-xl text-center md:text-left">
+              <span className="text-xs uppercase font-extrabold tracking-wider text-gold flex items-center justify-center md:justify-start gap-2 mb-1">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Certified Verification Guarantee</span>
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black font-heading text-white">
+                Every trade awards a QR-verified certificate.
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 mt-2">
+                Authorized under Government Licence No. {INSTITUTE.licenceNo} and registered Trade Mark No. {INSTITUTE.tradeMarkNo}.
+              </p>
             </div>
-            <span className="text-xs text-slate-500 font-medium">
-              Multi Welder, Argon (TIG), Electric Arc, and 6GR Pipe Welding
-            </span>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {weldingCourses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        </div>
-
-        {/* Category: Piping & Fabrication */}
-        <div>
-          <div className="border-b-2 border-slate-200 pb-4 mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-gold-700">
-                Category 02
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold font-heading text-navy flex items-center gap-2">
-                <span>Piping & Fabrication Trades</span>
-                <span className="font-urdu text-lg font-semibold text-gold-700" dir="rtl">پائپنگ اور فیبریکیشن</span>
-              </h2>
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                onClick={() => openModal()}
+                className="py-3 px-6 rounded-xl gold-gradient-btn text-xs sm:text-sm font-extrabold uppercase tracking-wide shadow-md active:scale-95"
+              >
+                Start Your Admission
+              </button>
             </div>
-            <span className="text-xs text-slate-500 font-medium">
-              Isometric Drawing Interpretation, Spool Fabrication, and Flange Fitting
-            </span>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl">
-            {pipingCourses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        </div>
-
-        {/* Category: Electrical & Control Trades */}
-        <div>
-          <div className="border-b-2 border-slate-200 pb-4 mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-gold-700">
-                Category 03
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold font-heading text-navy flex items-center gap-2">
-                <span>Electrical & Control Trades</span>
-                <span className="font-urdu text-lg font-semibold text-gold-700" dir="rtl">الیکٹریکل اور وائرنگ کورسز</span>
-              </h2>
-            </div>
-            <span className="text-xs text-slate-500 font-medium">
-              Industrial Motors, Control Panels, Building Wiring, and Power Transmission
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {electricalCourses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        </div>
-
-        {/* Category: Technical & Safety Trades */}
-        <div>
-          <div className="border-b-2 border-slate-200 pb-4 mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-gold-700">
-                Category 04
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold font-heading text-navy flex items-center gap-2">
-                <span>Technical & Safety Disciplines</span>
-                <span className="font-urdu text-lg font-semibold text-gold-700" dir="rtl">ٹیکنیکل و حفاظتی شعبہ جات</span>
-              </h2>
-            </div>
-            <span className="text-xs text-slate-500 font-medium">
-              Instrumentation Transmitters, Hot Work Safety, and Plumbing Networks
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {technicalCourses.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        </div>
-
-        {/* WhatsApp Admission Banner at Bottom */}
-        <div className="bg-gradient-to-r from-navy to-navy-900 rounded-3xl p-8 sm:p-10 text-white border-2 border-gold/40 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-center md:text-left">
-            <span className="text-xs font-bold text-gold uppercase tracking-wider">
-              Ready to enroll in your preferred course?
-            </span>
-            <h3 className="text-2xl sm:text-3xl font-bold font-heading text-white">
-              Get In Touch With Our Admission Counselor
-            </h3>
-            <p className="text-slate-300 text-xs sm:text-sm max-w-xl">
-              Message us directly on WhatsApp to confirm upcoming class timings, required documents, and batch dates.
-            </p>
-          </div>
-
-          <a
-            href={getWhatsAppAdmissionUrl()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm sm:text-base shadow-lg transition-all flex-shrink-0"
-          >
-            <MessageCircle className="w-5 h-5 fill-current" />
-            <span>Apply via WhatsApp ({INSTITUTE_INFO.whatsapp1})</span>
-          </a>
         </div>
       </section>
     </div>

@@ -1,72 +1,99 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { Archivo, Manrope } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
-import { INSTITUTE_INFO } from "@/lib/constants";
+import AdmissionModal from "@/components/AdmissionModal";
+import { AdmissionProvider } from "@/components/AdmissionContext";
+import { INSTITUTE } from "@/data/institute";
+
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["800", "900"],
+  variable: "--font-archivo",
+  display: "swap",
+});
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-manrope",
+  display: "swap",
+});
+
+export const viewport: Viewport = {
+  themeColor: "#0B2C4D",
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
-  metadataBase: new URL(`https://${INSTITUTE_INFO.domain}`),
+  metadataBase: new URL(`https://${INSTITUTE.domain}`),
   title: {
-    default: "Al-Muntazir Technical Training & Trade Center Kot Addu | Welding, Electrician & Plumber Courses",
+    default: "Al-Muntazir Technical Training & Trade Center Kot Addu | Welding, Electrician, Plumber Courses",
     template: "%s | Al-Muntazir Technical Training Center Kot Addu",
   },
   description:
-    "Government licensed technical training institute in Kot Addu (Licence H.213918-6, Trade Mark 909294). Comprehensive practical workshop training in Multi Welder, Argon Welder, 6GR, Pipe Fitter, Industrial Electrician, Plumber, and more with instant QR verified certificates.",
+    "Government Licensed (Licence H.213918-6, Trade Mark 909294) technical training institute in Kot Addu. Intensive practical training in Multi Welder, Argon Welder, 6GR Welder, Pipe Fitter, Industrial Electrician, Plumber with online QR-verified certificates.",
   keywords: [
-    "Technical Training Center Kot Addu",
     "Al-Muntazir Technical Training",
+    "Kot Addu Technical Center",
     "Welding Course Kot Addu",
-    "Multi Welder Training",
-    "Argon Welder TIG",
-    "6GR Pipe Welder",
+    "Multi Welder Training Pakistan",
+    "Argon Welder 6GR",
     "Pipe Fitter Course",
     "Industrial Electrician Kot Addu",
-    "Plumbing Training Kot Addu",
-    "Technical Trade Center Punjab",
-    "Haji Imdad Hussain",
+    "Technical Trade Certificate Pakistan",
+    "Trade Mark 909294",
+    "Licence H.213918-6",
   ],
-  authors: [{ name: INSTITUTE_INFO.name, url: `https://${INSTITUTE_INFO.domain}` }],
-  creator: INSTITUTE_INFO.owner,
-  publisher: INSTITUTE_INFO.name,
+  authors: [{ name: INSTITUTE.owner }],
+  creator: INSTITUTE.fullNameWithCity,
   openGraph: {
-    title: "Al-Muntazir Technical Training & Trade Center Kot Addu | 12 Technical Trades",
-    description:
-      "Empowering youth with certified technical skills and hands-on workshop training in Kot Addu. Government Licence H.213918-6. QR-verified trade certificates.",
-    url: `https://${INSTITUTE_INFO.domain}`,
-    siteName: INSTITUTE_INFO.name,
-    locale: "en_US",
     type: "website",
+    locale: "en_US",
+    url: `https://${INSTITUTE.domain}`,
+    siteName: INSTITUTE.fullNameWithCity,
+    title: "Al-Muntazir Technical Training & Trade Center Kot Addu",
+    description:
+      "12 technical trades with practical workshop training. Government Licensed H.213918-6, Trade Mark 909294. Every certificate verifies with an online QR scan.",
+    images: [
+      {
+        url: "/images/logo.png",
+        width: 800,
+        height: 800,
+        alt: "Al-Muntazir Technical Training & Trade Center",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Al-Muntazir Technical Training & Trade Center Kot Addu",
-    description: "Certified practical training in Welding, Piping, Electrical, and Technical Trades in Kot Addu.",
+    description: "12 practical technical courses in Kot Addu with QR-verified certificates.",
+    images: ["/images/logo.png"],
   },
-  alternates: {
-    canonical: `https://${INSTITUTE_INFO.domain}`,
-  },
-  robots: {
-    index: true,
-    follow: true,
+  icons: {
+    icon: "/images/logo.png",
+    apple: "/images/logo.png",
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-      </head>
-      <body className="min-h-screen flex flex-col bg-slate-50 text-navy font-sans antialiased selection:bg-gold selection:text-navy-950">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <FloatingWhatsApp />
+    <html lang="en" className={`${archivo.variable} ${manrope.variable}`}>
+      <body className="min-h-screen flex flex-col bg-white text-slate-900 antialiased selection:bg-gold-light selection:text-navy-950">
+        <AdmissionProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <FloatingWhatsApp />
+          <AdmissionModal />
+        </AdmissionProvider>
       </body>
     </html>
   );

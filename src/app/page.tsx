@@ -1,492 +1,619 @@
+"use client";
+
+import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  MessageCircle,
-  GraduationCap,
-  Wrench,
   ShieldCheck,
   Award,
-  Briefcase,
-  Users,
-  ChevronRight,
-  Phone,
-  CheckCircle2,
-  Calendar,
   Sparkles,
   ArrowRight,
-  MapPin,
+  MessageCircle,
+  FileText,
+  Wrench,
+  QrCode,
+  CheckCircle2,
+  Phone,
+  Clock,
+  Briefcase,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
-import {
-  INSTITUTE_INFO,
-  COURSES,
-  WHY_US,
-  ADMISSION_STEPS,
-  FAQ_ITEMS,
-  getWhatsAppAdmissionUrl,
-} from "@/lib/constants";
-import { getGalleryPhotos, getSuccessStories } from "@/lib/supabase";
-import CourseCard from "@/components/CourseCard";
-import GalleryLightbox from "@/components/GalleryLightbox";
-import Image from "next/image";
+import { INSTITUTE } from "@/data/institute";
+import { COURSES } from "@/data/courses";
+import { STATS } from "@/data/stats";
+import { INITIAL_SUCCESS_STORIES } from "@/data/stories";
+import { INITIAL_GALLERY_ITEMS, GalleryItem } from "@/data/gallery";
+import { FAQS } from "@/data/faq";
+import { useAdmissionModal } from "@/components/AdmissionContext";
+import ImageLightbox from "@/components/ImageLightbox";
+import { getWhatsAppUrl } from "@/lib/utils";
 
-// Revalidate data periodically
-export const revalidate = 60;
+export default function HomePage() {
+  const { openModal } = useAdmissionModal();
+  const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-export default async function HomePage() {
-  const [successStories, galleryPhotos] = await Promise.all([
-    getSuccessStories(),
-    getGalleryPhotos(),
-  ]);
-
-  const whyIcons: Record<string, React.ReactNode> = {
-    GraduationCap: <GraduationCap className="w-6 h-6 text-gold" />,
-    Wrench: <Wrench className="w-6 h-6 text-gold" />,
-    ShieldCheck: <ShieldCheck className="w-6 h-6 text-gold" />,
-    Award: <Award className="w-6 h-6 text-gold" />,
-    Briefcase: <Briefcase className="w-6 h-6 text-gold" />,
-    Users: <Users className="w-6 h-6 text-gold" />,
+  const toggleFaq = (idx: number) => {
+    setOpenFaqIndex(openFaqIndex === idx ? null : idx);
   };
 
   return (
-    <div className="flex flex-col w-full">
-      {/* SECTION 2: HERO SECTION */}
-      <section className="relative bg-gradient-to-b from-navy to-navy-950 text-white pt-12 pb-20 sm:pt-16 sm:pb-28 overflow-hidden">
-        {/* Subtle geometric pattern overlay */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#B08D2A_1px,transparent_1px)] [background-size:20px_20px]" />
+    <div className="w-full">
+      {/* =========================================================
+          SECTION 2: HERO (PREMIUM VIP NAVY + WELDER OVERLAY)
+      ========================================================= */}
+      <section className="relative bg-navy-950 text-white overflow-hidden pt-8 pb-14 sm:pt-14 sm:pb-20 lg:pt-20 lg:pb-24 border-b-2 border-gold-brand">
+        {/* Ambient Dark Navy & Gold Radial Glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-navy-950 via-navy-900 to-navy-950 opacity-95" />
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gold/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 -left-40 w-96 h-96 bg-navy-600/20 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col items-center text-center space-y-6 max-w-4xl mx-auto">
-            {/* Admission Open Announcement Banner */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold/15 border border-gold/40 text-gold-300 text-xs sm:text-sm font-semibold tracking-wide backdrop-blur-sm shadow-gold-glow animate-pulse">
-              <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>New Monthly Batches Starting Soon — Admission Open</span>
-              <span className="font-urdu text-xs text-gold ml-1" dir="rtl">داخلہ جاری ہے</span>
+        {/* Industrial Welder Sparkle Background Texture */}
+        <div
+          className="absolute inset-0 opacity-15 mix-blend-overlay bg-cover bg-center pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(#e3b93e 1px, transparent 1px), radial-gradient(#0B2C4D 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+            backgroundPosition: "0 0, 16px 16px",
+          }}
+        />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto text-center">
+            {/* Gold Kicker: Strictly visible, never clipped under header */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gold/10 border border-gold-brand/40 text-gold-light text-xs font-black tracking-widest uppercase mb-5 shadow-sm animate-fadeIn">
+              <Sparkles className="w-3.5 h-3.5 text-gold animate-spin-slow" />
+              <span>ADMISSIONS OPEN • KOT ADDU</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              <span className="text-[10px] text-slate-300 font-semibold hidden xs:inline">
+                Licence #{INSTITUTE.licenceNo}
+              </span>
             </div>
 
-            {/* Main Headline */}
-            <div className="space-y-3">
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black font-heading tracking-tight text-white leading-tight">
-                Al-Muntazir Technical Training & Trade Center
-              </h1>
-              <p className="font-urdu text-xl sm:text-2xl md:text-3xl text-gold font-bold leading-normal" dir="rtl">
-                المنتظر ٹیکنیکل ٹریننگ اینڈ ٹریڈ سینٹر کوٹ ادو
-              </p>
-            </div>
+            {/* Big White Bold Heading (Archivo 800-900) */}
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading tracking-tight text-white leading-[1.12] mb-5">
+              Learn a Skill. <br />
+              <span className="text-transparent bg-clip-text bg-gold-gradient">
+                Build Your Future.
+              </span>
+            </h1>
 
-            {/* Tagline / Subtitle */}
-            <p className="text-slate-300 text-sm sm:text-lg md:text-xl font-normal max-w-2xl leading-relaxed">
-              Govt. Licensed Technical Training Institute (Licence H.213918-6) providing hands-on practical workshop training in 12 technical trades with QR-verified qualifications.
+            {/* Subtext */}
+            <p className="text-sm sm:text-lg text-slate-200 font-medium leading-relaxed max-w-2xl mx-auto mb-8">
+              12 technical courses — every course ends with a certificate carrying a QR code.
             </p>
 
-            <p className="font-urdu text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed" dir="rtl">
-              صنعتی معیار کی جدید ورکشاپس، تجربہ کار اساتذہ اور سرکاری تسلیم شدہ سرٹیفکیٹ کے ساتھ باوقار روزگار کی ضمانت۔
-            </p>
-
-            {/* Hero CTA Buttons */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto">
-              <Link
-                href="/courses"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 font-bold text-sm sm:text-base shadow-gold-glow transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+            {/* Hero Buttons: Compact, side-by-side, mobile-optimized */}
+            <div className="flex flex-row items-center justify-center gap-2.5 sm:gap-4 max-w-md mx-auto">
+              {/* Gold "Admission Form" Button */}
+              <button
+                onClick={() => openModal()}
+                className="flex-1 py-2.5 px-3.5 sm:py-3.5 sm:px-6 rounded-xl gold-gradient-btn text-xs sm:text-sm font-extrabold uppercase tracking-wide flex items-center justify-center gap-1.5 sm:gap-2 shadow-lg active:scale-95 whitespace-nowrap"
               >
-                <span>View All 12 Courses</span>
-                <span className="font-urdu text-xs" dir="rtl">کورسز دیکھیں</span>
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </Link>
+                <FileText className="w-4 h-4 text-navy-950 shrink-0" />
+                <span>Admission Form</span>
+              </button>
 
+              {/* Green "Chat on WhatsApp" Button */}
               <a
-                href={getWhatsAppAdmissionUrl()}
+                href={getWhatsAppUrl("Hello, I would like to inquire about admissions at Al-Muntazir Technical Training Center.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm sm:text-base shadow-lg transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+                className="flex-1 py-2.5 px-3.5 sm:py-3.5 sm:px-6 rounded-xl bg-brandGreen hover:bg-brandGreen-hover text-white text-xs sm:text-sm font-extrabold uppercase tracking-wide flex items-center justify-center gap-1.5 sm:gap-2 shadow-lg active:scale-95 transition whitespace-nowrap"
               >
-                <MessageCircle className="w-5 h-5 fill-current" />
-                <span>WhatsApp Par Rabta Karein</span>
-                <span className="font-urdu text-xs" dir="rtl">واٹس ایپ رابطہ</span>
+                <MessageCircle className="w-4 h-4 text-white shrink-0" />
+                <span>Chat on WhatsApp</span>
               </a>
             </div>
 
-            {/* Trust Highlights Strip under Hero */}
-            <div className="pt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 w-full border-t border-navy-800/80 text-left">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-navy-900/60 border border-navy-800">
-                <ShieldCheck className="w-7 h-7 text-gold flex-shrink-0" />
-                <div>
-                  <div className="text-xs text-slate-400">Licence No.</div>
-                  <div className="text-xs sm:text-sm font-bold text-white font-mono">{INSTITUTE_INFO.licenceNo}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-navy-900/60 border border-navy-800">
-                <Award className="w-7 h-7 text-gold flex-shrink-0" />
-                <div>
-                  <div className="text-xs text-slate-400">Trade Mark No.</div>
-                  <div className="text-xs sm:text-sm font-bold text-white font-mono">{INSTITUTE_INFO.tradeMarkNo}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-navy-900/60 border border-navy-800">
-                <Wrench className="w-7 h-7 text-gold flex-shrink-0" />
-                <div>
-                  <div className="text-xs text-slate-400">Practical Trades</div>
-                  <div className="text-xs sm:text-sm font-bold text-white">12 Trade Courses</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-navy-900/60 border border-navy-800">
-                <CheckCircle2 className="w-7 h-7 text-emerald-400 flex-shrink-0" />
-                <div>
-                  <div className="text-xs text-slate-400">Verification</div>
-                  <div className="text-xs sm:text-sm font-bold text-emerald-300">Live QR Verified</div>
-                </div>
-              </div>
+            {/* Micro Trust Indicators */}
+            <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs text-slate-300">
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-gold" />
+                Government Licensed: {INSTITUTE.licenceNo}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Award className="w-4 h-4 text-gold" />
+                Trade Mark No: {INSTITUTE.tradeMarkNo}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <QrCode className="w-4 h-4 text-gold" />
+                Online QR Verification
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SECTION 3: WHY AL-MUNTAZIR */}
-      <section className="py-16 sm:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-2">
-            <span className="text-gold font-bold text-xs uppercase tracking-widest font-sans">
-              Our Core Strengths & Trust
+      {/* =========================================================
+          SECTION 3: STATS STRIP (WHITE BACKGROUND, NAVY TEXT)
+          Mobile rule: All 4 stats visible in a 2x2 grid, nothing hidden
+      ========================================================= */}
+      <section className="bg-white border-b border-slate-200 py-6 sm:py-8 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 divide-y-0 sm:divide-x sm:divide-slate-200">
+            {STATS.map((stat, idx) => (
+              <div
+                key={idx}
+                className={`text-center px-2 py-2 ${
+                  idx % 2 === 1 ? "border-l border-slate-200 lg:border-l-0" : ""
+                }`}
+              >
+                <p className="text-2xl sm:text-3xl lg:text-4xl font-black font-heading text-navy-800 tracking-tight">
+                  {stat.value}
+                </p>
+                <p className="text-xs sm:text-sm font-extrabold text-navy-950 uppercase tracking-wider mt-0.5">
+                  {stat.label}
+                </p>
+                <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">
+                  {stat.highlight}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION 4: POPULAR COURSES WITH DURATIONS (CHIPS + LINK)
+      ========================================================= */}
+      <section className="bg-slate-50/70 py-12 sm:py-16 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <span className="inline-block px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-full bg-gold/15 text-navy-800 border border-gold-brand/40 mb-2">
+              Vocational Trade Catalog
             </span>
-            <h2 className="text-2xl sm:text-4xl font-bold font-heading text-navy">
-              Why Al-Muntazir Technical Training Center?
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-navy-900 tracking-tight">
+              Popular Technical Trades
             </h2>
-            <p className="font-urdu text-lg sm:text-xl font-semibold text-gold-700" dir="rtl">
-              المنتظر ٹیکنیکل ٹریننگ سینٹر کا انتخاب کیوں کریں؟
-            </p>
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              We focus on hands-on practical competence, safety, and certified trade excellence to prepare you for rewarding careers in industrial projects.
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">
+              Explore our intensive market-aligned trade programs. Every course focuses on practical workshop skills.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {WHY_US.map((point, index) => (
+          {/* Course Chips Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+            {COURSES.map((course) => (
               <div
-                key={index}
-                className="group p-6 rounded-2xl bg-slate-50 border border-slate-200 hover:border-gold/60 hover:bg-white transition-all duration-300 shadow-sm hover:shadow-navy-card flex flex-col justify-between"
+                key={course.id}
+                className="bg-white rounded-xl p-3.5 border border-slate-200/80 hover:border-gold-brand hover:shadow-md transition-all group flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-12 h-12 rounded-xl bg-navy flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
-                    {whyIcons[point.icon] || <CheckCircle2 className="w-6 h-6 text-gold" />}
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <span className="text-[11px] font-extrabold text-navy-800 uppercase tracking-wider">
+                      {course.duration}
+                    </span>
+                    {course.badge && (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gold/15 text-navy-900 border border-gold/40">
+                        {course.badge}
+                      </span>
+                    )}
                   </div>
-                  <h3 className="text-lg font-bold text-navy font-heading mb-1">
-                    {point.title}
+                  <h3 className="text-sm sm:text-base font-extrabold font-heading text-navy-900 group-hover:text-gold-brand transition-colors">
+                    {course.name}
                   </h3>
-                  <p className="font-urdu text-sm font-semibold text-gold-700 mb-3" dir="rtl">
-                    {point.titleUrdu}
-                  </p>
-                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-3">
-                    {point.desc}
+                  <p className="text-[11px] text-slate-500 line-clamp-2 mt-1">
+                    {course.shortDescription}
                   </p>
                 </div>
-                <div className="pt-3 border-t border-slate-100">
-                  <p className="font-urdu text-xs text-slate-500 leading-relaxed" dir="rtl">
-                    {point.descUrdu}
-                  </p>
+
+                <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between">
+                  <button
+                    onClick={() => openModal(course.name)}
+                    className="text-[11px] font-bold text-navy-700 hover:text-navy-950 flex items-center gap-1"
+                  >
+                    <span>Apply</span>
+                    <ArrowRight className="w-3 h-3 text-gold-brand" />
+                  </button>
+                  <a
+                    href={getWhatsAppUrl(`Hello, I want to apply for the *${course.name}* course.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-bold text-brandGreen hover:underline flex items-center gap-1"
+                  >
+                    <MessageCircle className="w-3 h-3" />
+                    <span>WhatsApp</span>
+                  </a>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* SECTION 4: POPULAR COURSES PREVIEW */}
-      <section className="py-16 sm:py-24 bg-slate-100/70 border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
-            <div>
-              <span className="text-gold font-bold text-xs uppercase tracking-widest">
-                Job-Oriented Technical Trades
-              </span>
-              <h2 className="text-2xl sm:text-4xl font-bold font-heading text-navy mt-1">
-                Popular Technical Trade Courses
-              </h2>
-              <p className="font-urdu text-lg sm:text-xl font-semibold text-gold-700 mt-1" dir="rtl">
-                ہمارے مقبول اور مانگ والے ٹیکنیکل کورسز
-              </p>
-            </div>
+          <div className="text-center">
             <Link
               href="/courses"
-              className="inline-flex items-center gap-2 text-sm font-bold text-navy hover:text-gold transition-colors self-start md:self-auto"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-navy-800 hover:bg-navy-900 text-white text-xs sm:text-sm font-extrabold uppercase tracking-wider shadow-md transition group"
             >
-              <span>View all 12 courses</span>
-              <span className="font-urdu text-xs" dir="rtl">تمام کورسز</span>
-              <ChevronRight className="w-4 h-4 text-gold" />
-            </Link>
-          </div>
-
-          {/* Show top 6 popular courses */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {COURSES.slice(0, 6).map((course, idx) => (
-              <CourseCard key={course.id} course={course} priority={idx === 0} />
-            ))}
-          </div>
-
-          <div className="mt-12 text-center">
-            <Link
-              href="/courses"
-              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-navy hover:bg-navy-700 text-white font-bold text-sm shadow-md transition-all"
-            >
-              <span>Explore All 12 Courses & Syllabi</span>
-              <ArrowRight className="w-4 h-4 text-gold" />
+              <span>Explore All 12 Courses & Full Syllabi</span>
+              <ArrowRight className="w-4 h-4 text-gold group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* SECTION 5: SUCCESS STORIES */}
-      <section className="py-16 sm:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-2">
-            <span className="text-gold font-bold text-xs uppercase tracking-widest font-sans">
-              Our Passed-out Students
+      {/* =========================================================
+          SECTION 5: WHY AL-MUNTAZIR (3 VIP CARDS WITH GOLD TOP BORDER)
+      ========================================================= */}
+      <section className="bg-white py-14 sm:py-20 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="inline-block px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-full bg-gold/15 text-navy-800 border border-gold-brand/40 mb-2">
+              Institution Credibility
             </span>
-            <h2 className="text-2xl sm:text-4xl font-bold font-heading text-navy">
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-navy-900 tracking-tight">
+              Why Al-Muntazir Technical Center
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">
+              We provide recognized credentials and authentic technical expertise that employers rely upon.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {/* Card 1: A Licensed Institute */}
+            <div className="gold-border-card rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-xl bg-navy-900 text-gold flex items-center justify-center mb-5 shadow-sm">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-black font-heading text-navy-900 mb-2">
+                  A Licensed Institute
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Operated legally and transparently with Government <strong>Licence No. {INSTITUTE.licenceNo}</strong> and registered <strong>Trade Mark No. {INSTITUTE.tradeMarkNo}</strong>. Full institutional integrity and recognized legal standing.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-bold text-navy-800">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>Verified Official Center in Kot Addu</span>
+              </div>
+            </div>
+
+            {/* Card 2: Practical Training */}
+            <div className="gold-border-card rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-xl bg-navy-900 text-gold flex items-center justify-center mb-5 shadow-sm">
+                  <Wrench className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-black font-heading text-navy-900 mb-2">
+                  Practical Workshop Training
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Students learn by doing real physical work in our fully-equipped workshop. From high-pressure pipe welding booths to industrial 3-phase switchgear and control wiring benches.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-bold text-navy-800">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>Industry Grade Tools & Materials</span>
+              </div>
+            </div>
+
+            {/* Card 3: QR Certificate */}
+            <div className="gold-border-card rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+              <div>
+                <div className="w-12 h-12 rounded-xl bg-navy-900 text-gold flex items-center justify-center mb-5 shadow-sm">
+                  <QrCode className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg sm:text-xl font-black font-heading text-navy-900 mb-2">
+                  QR-Verified Certificate
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Every certificate carries a secure online QR code. Employers and verification agencies can instantly confirm authenticity and course transcript details directly on our live website.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-bold text-navy-800">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>Tamper-proof Digital Verification</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION 6: SUCCESS STORIES (GRADUATE SHOWCASE)
+      ========================================================= */}
+      <section id="stories" className="bg-slate-50 py-14 sm:py-20 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="inline-block px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-full bg-gold/15 text-navy-800 border border-gold-brand/40 mb-2">
+              Graduate Showcase
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-navy-900 tracking-tight">
               Student Success Stories
             </h2>
-            <p className="font-urdu text-lg sm:text-xl font-semibold text-gold-700" dir="rtl">
-              ہمارے کامیاب طلبہ کی کہانیاں اور روزگار
-            </p>
-            <p className="text-slate-600 text-sm sm:text-base">
-              Real technicians trained at Al-Muntazir TTC who successfully qualified trade tests and secured positions across industrial engineering projects.
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">
+              See where our certified graduates have taken their practical technical training into demanding industrial roles.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {successStories.map((story) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {INITIAL_SUCCESS_STORIES.map((story) => (
               <div
                 key={story.id}
-                className="bg-slate-50 rounded-2xl p-6 border border-slate-200 hover:border-gold/50 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm hover:shadow-lg transition-all flex flex-col justify-between"
               >
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-12 h-12 rounded-full overflow-hidden bg-navy-800 border-2 border-gold flex items-center justify-center text-white font-bold text-base flex-shrink-0">
-                      {story.photo_url ? (
-                        <Image
-                          src={story.photo_url}
-                          alt={story.student_name}
-                          fill
-                          className="object-cover"
-                        />
-                      ) : (
-                        <span>{story.student_name.charAt(0)}</span>
-                      )}
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full bg-navy-900 text-gold font-bold flex items-center justify-center text-sm border-2 border-gold-brand shrink-0">
+                      {story.studentName.slice(0, 2).toUpperCase()}
                     </div>
                     <div>
-                      <h3 className="font-bold text-navy text-sm sm:text-base font-heading">
-                        {story.student_name}
+                      <h3 className="text-sm font-extrabold font-heading text-navy-950">
+                        {story.studentName}
                       </h3>
-                      <p className="text-xs text-gold-700 font-semibold">
-                        {story.course_name}
+                      <p className="text-[11px] text-gold-brand font-bold">
+                        {story.courseName}
                       </p>
                     </div>
                   </div>
 
-                  <div className="inline-block px-2.5 py-1 rounded bg-navy-100 text-navy-900 text-xs font-semibold">
-                    💼 {story.job}
+                  <div className="bg-slate-50 rounded-lg p-2.5 mb-3 border border-slate-100 flex items-start gap-2">
+                    <Briefcase className="w-4 h-4 text-navy-700 shrink-0 mt-0.5" />
+                    <span className="text-xs font-bold text-navy-900">
+                      {story.companyOrJob}
+                    </span>
                   </div>
 
                   <p className="text-xs text-slate-600 leading-relaxed italic">
-                    "{story.story}"
+                    &ldquo;{story.story}&rdquo;
                   </p>
                 </div>
 
-                <div className="pt-3 mt-4 border-t border-slate-200/70 flex items-center justify-between text-[11px] text-slate-400">
-                  <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                    <CheckCircle2 className="w-3 h-3" /> Certified Graduate
-                  </span>
-                  <span>Kot Addu</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 6: GALLERY PREVIEW */}
-      <section className="py-16 sm:py-24 bg-navy-950 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-12 space-y-2">
-            <span className="text-gold font-bold text-xs uppercase tracking-widest font-sans">
-              Practical Campus Life
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-bold font-heading text-white">
-              Workshop & Training Gallery
-            </h2>
-            <p className="font-urdu text-lg sm:text-xl font-semibold text-gold" dir="rtl">
-              ورکشاپ اور پریکٹیکل ٹریننگ کی جھلکیاں
-            </p>
-            <p className="text-slate-400 text-xs sm:text-sm">
-              Take a look inside our real workshops, pipe welding booths, electrical simulation boards, and safety demonstration sessions.
-            </p>
-          </div>
-
-          <GalleryLightbox photos={galleryPhotos} limit={6} />
-        </div>
-      </section>
-
-      {/* SECTION 7: ADMISSION PROCESS */}
-      <section className="py-16 sm:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-2">
-            <span className="text-gold font-bold text-xs uppercase tracking-widest font-sans">
-              Simple 4 Steps
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-bold font-heading text-navy">
-              Admission Process / داخلہ کا آسان طریقہ
-            </h2>
-            <p className="text-slate-600 text-sm sm:text-base">
-              Starting your technical career is straightforward. Follow these four simple steps to enroll in your desired trade.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-            {ADMISSION_STEPS.map((step) => (
-              <div
-                key={step.step}
-                className="relative bg-slate-50 rounded-2xl p-6 border-2 border-slate-200 hover:border-gold transition-all duration-300 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="w-12 h-12 rounded-xl bg-gold text-navy-950 font-black text-xl flex items-center justify-center mb-4 shadow-gold-glow">
-                    0{step.step}
-                  </div>
-                  <h3 className="font-bold text-navy text-base font-heading mb-1">
-                    {step.title}
-                  </h3>
-                  <p className="font-urdu text-sm font-semibold text-gold-700 mb-2" dir="rtl">
-                    {step.titleUrdu}
-                  </p>
-                  <p className="text-slate-600 text-xs leading-relaxed mb-3">
-                    {step.desc}
-                  </p>
-                </div>
-                <div className="pt-3 border-t border-slate-200">
-                  <p className="font-urdu text-xs text-slate-500 leading-relaxed" dir="rtl">
-                    {step.descUrdu}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-12 p-6 rounded-2xl bg-gold-50 border border-gold-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-            <div>
-              <h4 className="font-bold text-navy text-base">Ready to visit our admission desk?</h4>
-              <p className="text-xs text-slate-600 mt-0.5">
-                Our office is located at 88 Road, Near Benazir Income Support Office, Kot Addu.
-              </p>
-            </div>
-            <a
-              href={`tel:${INSTITUTE_INFO.phone.replace(/\s+/g, "")}`}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-navy text-white hover:bg-navy-800 text-xs sm:text-sm font-semibold flex-shrink-0"
-            >
-              <Phone className="w-4 h-4 text-gold" />
-              <span>Call: {INSTITUTE_INFO.phone}</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 8: FAQ PREVIEW */}
-      <section className="py-16 sm:py-24 bg-slate-100/70 border-y border-slate-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12 space-y-2">
-            <span className="text-gold font-bold text-xs uppercase tracking-widest font-sans">
-              Frequently Asked Questions
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-bold font-heading text-navy">
-              Common Questions / عام سوالات کے جوابات
-            </h2>
-            <p className="text-slate-600 text-xs sm:text-sm">
-              Have questions regarding course durations, QR certificates, job guidance, or admission requirements?
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {FAQ_ITEMS.map((item, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-3"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="font-bold text-navy text-base font-heading flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-gold flex-shrink-0" />
-                    <span>{item.question}</span>
-                  </h3>
-                  <span className="font-urdu text-sm font-semibold text-gold-700 hidden sm:block" dir="rtl">
-                    {item.questionUrdu}
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                  <span>{story.batchYear}</span>
+                  <span className="text-emerald-700 font-bold flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5" /> Verified Passout
                   </span>
                 </div>
-                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                  {item.answer}
-                </p>
-                <p className="font-urdu text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-2" dir="rtl">
-                  {item.answerUrdu}
-                </p>
               </div>
             ))}
-          </div>
-
-          <div className="mt-8 text-center text-xs text-slate-500">
-            <span>Kisi mazeed maloomat ke liye hamare WhatsApp number par rabta karein: </span>
-            <a
-              href={`https://wa.me/${INSTITUTE_INFO.whatsapp1Clean}`}
-              className="text-emerald-600 font-bold hover:underline"
-            >
-              {INSTITUTE_INFO.whatsapp1}
-            </a>
           </div>
         </div>
       </section>
 
-      {/* SECTION 9: CONTACT STRIP */}
-      <section className="py-12 bg-navy text-white border-t border-navy-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div className="space-y-2 text-center lg:text-left">
-              <span className="inline-block px-3 py-1 rounded-full bg-gold/20 text-gold text-xs font-bold uppercase tracking-wider">
-                Direct Contact Desk
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold font-heading text-white">
-                Visit Us in Kot Addu or Reach Out on WhatsApp
+      {/* =========================================================
+          SECTION 7: GALLERY PREVIEW (WORKSHOP PHOTOS + LIGHTBOX)
+      ========================================================= */}
+      <section id="gallery" className="bg-white py-14 sm:py-20 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="inline-block px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-full bg-gold/15 text-navy-800 border border-gold-brand/40 mb-2">
+              Workshop Environment
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-navy-900 tracking-tight">
+              Practical Training Workshop Gallery
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">
+              Take an inside look at our active training bays, welding booths, and electrical testing setups in Kot Addu. Click any photo to enlarge.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {INITIAL_GALLERY_ITEMS.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => setSelectedImage(item)}
+                className="group relative h-64 rounded-2xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all border border-slate-200"
+              >
+                <Image
+                  src={item.imageUrl}
+                  alt={item.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+                <div className="absolute bottom-0 inset-x-0 p-4 text-white">
+                  <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-gold/20 text-gold-light border border-gold/30 mb-1">
+                    {item.category}
+                  </span>
+                  <h3 className="text-sm font-extrabold font-heading text-white group-hover:text-gold transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-[11px] text-slate-300 line-clamp-1 mt-0.5">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION 8: ADMISSION PROCESS (4 STEPS)
+      ========================================================= */}
+      <section id="admission-process" className="bg-slate-50 py-14 sm:py-20 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="inline-block px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-full bg-gold/15 text-navy-800 border border-gold-brand/40 mb-2">
+              Simple 4-Step Process
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-navy-900 tracking-tight">
+              How to Secure Admission
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">
+              Join the next upcoming training batch with our straightforward registration procedure.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Step 1 */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 relative shadow-sm hover:shadow-md transition">
+              <div className="w-10 h-10 rounded-full bg-navy-900 text-gold font-extrabold flex items-center justify-center text-base mb-4 border border-gold-brand">
+                1
+              </div>
+              <h3 className="text-base font-extrabold font-heading text-navy-900 mb-1.5">
+                Get in Touch
               </h3>
-              <p className="text-slate-300 text-xs sm:text-sm flex items-center justify-center lg:justify-start gap-1.5">
-                <MapPin className="w-4 h-4 text-gold flex-shrink-0" />
-                <span>{INSTITUTE_INFO.address}</span>
+              <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                Call our landline ({INSTITUTE.phone}) or message us on WhatsApp (+92 315 4037212) to inquire about available course seats.
               </p>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-3">
               <a
-                href={`tel:${INSTITUTE_INFO.phone.replace(/\s+/g, "")}`}
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-navy-800 hover:bg-navy-700 text-white font-semibold text-xs sm:text-sm border border-navy-700 shadow"
-              >
-                <Phone className="w-4 h-4 text-gold" />
-                <span>{INSTITUTE_INFO.phone}</span>
-              </a>
-
-              <a
-                href={`https://wa.me/${INSTITUTE_INFO.whatsapp1Clean}`}
+                href={getWhatsAppUrl("Hello, I want to inquire about upcoming batch admissions.")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-lg"
+                className="text-xs font-bold text-brandGreen hover:underline inline-flex items-center gap-1"
               >
-                <MessageCircle className="w-4 h-4" />
-                <span>WhatsApp: {INSTITUTE_INFO.whatsapp1}</span>
+                <span>Message on WhatsApp</span>
+                <ArrowRight className="w-3 h-3" />
               </a>
+            </div>
 
+            {/* Step 2 */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 relative shadow-sm hover:shadow-md transition">
+              <div className="w-10 h-10 rounded-full bg-navy-900 text-gold font-extrabold flex items-center justify-center text-base mb-4 border border-gold-brand">
+                2
+              </div>
+              <h3 className="text-base font-extrabold font-heading text-navy-900 mb-1.5">
+                Submit Documents
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                Bring or submit a copy of your National CNIC / B-Form along with passport-sized photographs to the campus office.
+              </p>
+              <span className="text-[11px] font-semibold text-slate-500">
+                Prerequisites verified on visit
+              </span>
+            </div>
+
+            {/* Step 3: Direct Button to open Admission Form */}
+            <div className="bg-white rounded-2xl p-6 border-2 border-gold-brand/80 relative shadow-md hover:shadow-xl transition bg-gold-surface/30">
+              <div className="w-10 h-10 rounded-full bg-gold-gradient text-navy-950 font-extrabold flex items-center justify-center text-base mb-4 shadow-sm">
+                3
+              </div>
+              <h3 className="text-base font-extrabold font-heading text-navy-900 mb-1.5">
+                Fill the Form
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                Complete the admission form online right now or in person at our Kot Addu registration desk.
+              </p>
+              <button
+                onClick={() => openModal()}
+                className="w-full py-2 px-3 rounded-lg gold-gradient-btn text-xs font-extrabold uppercase tracking-wide flex items-center justify-center gap-1.5"
+              >
+                <span>Fill Online Form Now</span>
+                <ArrowRight className="w-3 h-3 text-navy-950" />
+              </button>
+            </div>
+
+            {/* Step 4 */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 relative shadow-sm hover:shadow-md transition">
+              <div className="w-10 h-10 rounded-full bg-navy-900 text-gold font-extrabold flex items-center justify-center text-base mb-4 border border-gold-brand">
+                4
+              </div>
+              <h3 className="text-base font-extrabold font-heading text-navy-900 mb-1.5">
+                Classes Begin
+              </h3>
+              <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                Receive your student roll number and commence direct hands-on workshop training under senior instructors.
+              </p>
+              <span className="text-[11px] font-semibold text-emerald-700 flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Practical Training Starts
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION 9: FAQ PREVIEW (COMMON QUESTIONS, NO FEES)
+      ========================================================= */}
+      <section id="faq" className="bg-white py-14 sm:py-20 border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <span className="inline-block px-3 py-1 text-[11px] font-black uppercase tracking-widest rounded-full bg-gold/15 text-navy-800 border border-gold-brand/40 mb-2">
+              Helpful Information
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black font-heading text-navy-900 tracking-tight">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">
+              Common questions answered clearly. For specific batch schedules, contact our admissions desk.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {FAQS.map((faq, index) => {
+              const isOpen = openFaqIndex === index;
+              return (
+                <div
+                  key={index}
+                  className="rounded-xl border border-slate-200 overflow-hidden transition-all bg-white"
+                >
+                  <button
+                    onClick={() => toggleFaq(index)}
+                    className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-slate-50 transition"
+                  >
+                    <span className="text-sm sm:text-base font-extrabold font-heading text-navy-900">
+                      {faq.question}
+                    </span>
+                    {isOpen ? (
+                      <ChevronUp className="w-5 h-5 text-gold-brand shrink-0" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-slate-400 shrink-0" />
+                    )}
+                  </button>
+                  {isOpen && (
+                    <div className="px-5 pb-4 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 bg-slate-50/50 pt-3">
+                      {faq.answer}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================
+          SECTION 10: CONTACT STRIP + ACTION CALLOUT
+      ========================================================= */}
+      <section className="bg-navy-900 text-white py-12 border-b border-navy-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-r from-navy-950 via-navy-900 to-navy-950 p-6 sm:p-10 rounded-2xl border border-gold-brand/50 shadow-xl flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+            <div className="max-w-xl">
+              <div className="flex items-center gap-2 text-gold text-xs font-bold uppercase tracking-wider mb-2">
+                <Clock className="w-4 h-4" />
+                <span>Visit Campus Today</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black font-heading text-white">
+                Ready to Master an Industrial Technical Skill?
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
+                Campus: 88 Road, Near Benazir Income Support Office, Building Old Nadra Office, Kot Addu. Call +92 66 2240999 or message on WhatsApp.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <button
+                onClick={() => openModal()}
+                className="py-3 px-5 rounded-xl gold-gradient-btn text-xs sm:text-sm font-extrabold uppercase tracking-wide shadow-md active:scale-95"
+              >
+                Apply for Admission
+              </button>
               <Link
                 href="/contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 font-bold text-xs sm:text-sm shadow-gold-glow"
+                className="py-3 px-5 rounded-xl bg-navy-800 hover:bg-navy-700 text-white text-xs sm:text-sm font-bold border border-white/20 transition active:scale-95"
               >
-                <span>Contact Page</span>
-                <ArrowRight className="w-4 h-4" />
+                View Campus & Map
               </Link>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Interactive Lightbox for Gallery */}
+      {selectedImage && (
+        <ImageLightbox
+          isOpen={!!selectedImage}
+          imageUrl={selectedImage.imageUrl}
+          title={selectedImage.title}
+          description={selectedImage.description}
+          onClose={() => setSelectedImage(null)}
+        />
+      )}
     </div>
   );
 }

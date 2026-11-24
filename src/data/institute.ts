@@ -1,0 +1,27 @@
+export const INSTITUTE = {
+  name: "Al-Muntazir Technical Training & Trade Center",
+  shortName: "Al-Muntazir",
+  city: "Kot Addu",
+  fullNameWithCity: "Al-Muntazir Technical Training & Trade Center, Kot Addu",
+  owner: "Haji Imdad Hussain",
+  licenceNo: "H.213918-6",
+  tradeMarkNo: "909294",
+  domain: "almuntazirttc.com",
+  address: "88 Road, Near Benazir Income Support Office, Building Old Nadra Office, Kot Addu",
+  phone: "+92 66 2240999",
+  primaryWhatsApp: "+92 315 4037212",
+  primaryWhatsAppClean: "923154037212",
+  secondaryWhatsApp: "+92 333 4060028",
+  secondaryWhatsAppClean: "923334060028",
+  timingsPlaceholder: "Monday – Saturday: 8:00 AM – 5:00 PM (Training Workshop Hours)",
+  leftSignatoryDefault: {
+    name: "TALHA HUSSAIN",
+    title: "Workshop Incharge",
+    signatureUrl: "/images/signature_talha.png",
+  },
+  rightSignatoryDefault: {
+    name: "IMDAD HUSSAIN",
+    title: "Project Incharge",
+    signatureUrl: "/images/signature_imdad.png",
+  },
+};

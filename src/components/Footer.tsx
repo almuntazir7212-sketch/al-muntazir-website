@@ -1,181 +1,219 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
-import { Phone, MessageCircle, MapPin, Award, CheckCircle, Clock } from "lucide-react";
-import Logo from "./Logo";
-import { INSTITUTE_INFO, COURSES } from "@/lib/constants";
+import Image from "next/image";
+import { Phone, MessageCircle, MapPin, Award, CheckCircle, ExternalLink } from "lucide-react";
+import { INSTITUTE } from "@/data/institute";
+import { COURSES } from "@/data/courses";
+import { getWhatsAppUrl } from "@/lib/utils";
 
 export default function Footer() {
   return (
-    <footer className="bg-navy-950 text-slate-300 border-t-4 border-gold pt-12 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pb-10 border-b border-navy-800">
+    <footer className="bg-navy-950 text-slate-300 border-t-2 border-gold-brand">
+      {/* Top Banner with Trust Highlights */}
+      <div className="bg-navy-900 border-b border-navy-800 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-gold/15 border border-gold-brand flex items-center justify-center text-gold shrink-0">
+                <Award className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs uppercase font-extrabold tracking-wider text-gold">Government Licensed</p>
+                <p className="text-sm font-bold text-white">Licence No: {INSTITUTE.licenceNo}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center md:justify-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-gold/15 border border-gold-brand flex items-center justify-center text-gold shrink-0">
+                <CheckCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs uppercase font-extrabold tracking-wider text-gold">Registered Trademark</p>
+                <p className="text-sm font-bold text-white">Trade Mark No: {INSTITUTE.tradeMarkNo}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center md:justify-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-gold/15 border border-gold-brand flex items-center justify-center text-gold shrink-0">
+                <MapPin className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs uppercase font-extrabold tracking-wider text-gold">Main Campus Kot Addu</p>
+                <p className="text-sm font-bold text-white">88 Road, Near Benazir Office</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Col 1: Institute Info */}
           <div className="space-y-4">
-            <Logo size={56} showText={true} lightText={true} />
-            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed font-sans">
-              Al-Muntazir Technical Training & Trade Center Kot Addu is a government registered technical training institute committed to practical trade excellence and certified technical qualifications.
+            <div className="flex items-center gap-3">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gold-brand bg-white shrink-0">
+                <Image
+                  src="/images/logo.png"
+                  alt="Al-Muntazir Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <div>
+                <h4 className="text-white font-extrabold font-heading text-base leading-tight">
+                  AL-MUNTAZIR
+                </h4>
+                <p className="text-xs text-gold font-medium">Technical Training & Trade Center</p>
+              </div>
+            </div>
+            <p className="text-xs leading-relaxed text-slate-300">
+              Premier technical vocational training institute in Kot Addu. Providing world-class practical workshop training in certified industrial trades under the supervision of Haji Imdad Hussain.
             </p>
-            <p className="font-urdu text-xs text-gold/90 leading-relaxed" dir="rtl">
-              کوٹ ادو میں فنی مہارت، عملی ٹریننگ اور تسلیم شدہ سرٹیفکیٹ کا بااعتماد ادارہ۔
-            </p>
-            <div className="pt-1 flex flex-col gap-1.5 text-xs text-slate-300">
-              <span className="flex items-center gap-1.5">
-                <Award className="w-4 h-4 text-gold" />
-                Govt. Licence No: <strong className="text-white ml-1">{INSTITUTE_INFO.licenceNo}</strong>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <CheckCircle className="w-4 h-4 text-gold" />
-                Registered Trade Mark No: <strong className="text-white ml-1">{INSTITUTE_INFO.tradeMarkNo}</strong>
-              </span>
-              <span className="text-slate-400">
-                Founder / Project Incharge: <strong className="text-white ml-1">{INSTITUTE_INFO.owner}</strong>
-              </span>
+            <div className="pt-2 text-xs space-y-1 text-slate-400">
+              <p><strong className="text-slate-200">Owner:</strong> {INSTITUTE.owner}</p>
+              <p><strong className="text-slate-200">Licence No:</strong> {INSTITUTE.licenceNo}</p>
+              <p><strong className="text-slate-200">Trade Mark No:</strong> {INSTITUTE.tradeMarkNo}</p>
             </div>
           </div>
 
-          {/* Col 2: Quick Links & Trust */}
-          <div className="space-y-4">
-            <h3 className="text-gold font-bold text-base uppercase tracking-wider font-heading flex items-center gap-2">
-              <span className="w-2 h-2 bg-gold rounded-full" />
-              Quick Links / صفحات
-            </h3>
-            <ul className="space-y-2 text-sm">
+          {/* Col 2: Quick Links & Sections */}
+          <div>
+            <h4 className="text-white font-extrabold font-heading text-sm uppercase tracking-wider mb-4 border-l-2 border-gold-brand pl-2.5">
+              Quick Navigation
+            </h4>
+            <ul className="space-y-2 text-xs font-semibold">
               <li>
-                <Link href="/" className="hover:text-gold transition-colors flex items-center gap-2">
-                  <span className="text-gold">›</span> Home / ہوم
+                <Link href="/" className="hover:text-gold transition">
+                  Home
                 </Link>
               </li>
               <li>
-                <Link href="/courses" className="hover:text-gold transition-colors flex items-center gap-2">
-                  <span className="text-gold">›</span> All 12 Courses / تمام کورسز
+                <Link href="/courses" className="hover:text-gold transition">
+                  All 12 Technical Courses
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="hover:text-gold transition-colors flex items-center gap-2">
-                  <span className="text-gold">›</span> About / Bharosa / تعارف و اعتبار
+                <Link href="/about" className="hover:text-gold transition">
+                  About the Institute & Leadership
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-gold transition-colors flex items-center gap-2">
-                  <span className="text-gold">›</span> Contact & Location / رابطہ
+                <Link href="/contact" className="hover:text-gold transition">
+                  Contact & Campus Map
+                </Link>
+              </li>
+              <li className="pt-2 border-t border-navy-800">
+                <Link href="/#stories" className="text-slate-300 hover:text-gold transition flex items-center gap-1">
+                  <span>Success Stories</span>
+                  <ExternalLink className="w-3 h-3 text-gold" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/#gallery" className="text-slate-300 hover:text-gold transition flex items-center gap-1">
+                  <span>Workshop Gallery</span>
+                  <ExternalLink className="w-3 h-3 text-gold" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/#admission-process" className="text-slate-300 hover:text-gold transition flex items-center gap-1">
+                  <span>Admission Process</span>
+                  <ExternalLink className="w-3 h-3 text-gold" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/#faq" className="text-slate-300 hover:text-gold transition flex items-center gap-1">
+                  <span>Frequently Asked Questions</span>
+                  <ExternalLink className="w-3 h-3 text-gold" />
                 </Link>
               </li>
             </ul>
-
-            <div className="bg-navy-900 border border-navy-700/80 rounded-lg p-3 text-xs text-slate-300 space-y-1">
-              <div className="font-semibold text-gold flex items-center gap-1.5">
-                <CheckCircle className="w-3.5 h-3.5 text-gold" />
-                Official QR Verification
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Every certificate issued by our center carries a unique QR code verifying directly via almuntazirttc.com.
-              </p>
-            </div>
           </div>
 
           {/* Col 3: Popular Courses */}
-          <div className="space-y-4">
-            <h3 className="text-gold font-bold text-base uppercase tracking-wider font-heading flex items-center gap-2">
-              <span className="w-2 h-2 bg-gold rounded-full" />
-              Technical Trades / کورسز
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-1.5 text-xs">
+          <div>
+            <h4 className="text-white font-extrabold font-heading text-sm uppercase tracking-wider mb-4 border-l-2 border-gold-brand pl-2.5">
+              Technical Trades
+            </h4>
+            <ul className="space-y-2 text-xs">
               {COURSES.slice(0, 6).map((c) => (
-                <Link
-                  key={c.id}
-                  href={`/courses#${c.id}`}
-                  className="hover:text-gold transition-colors flex items-center justify-between py-1 border-b border-navy-900"
-                >
-                  <span className="font-medium">{c.name}</span>
-                  <span className="text-gold-300 text-[11px] font-sans">({c.duration})</span>
-                </Link>
+                <li key={c.id}>
+                  <Link
+                    href={`/courses#${c.id}`}
+                    className="hover:text-gold transition flex items-center justify-between"
+                  >
+                    <span>{c.name}</span>
+                    <span className="text-[11px] text-slate-400 font-medium">{c.duration}</span>
+                  </Link>
+                </li>
               ))}
-              <Link
-                href="/courses"
-                className="text-gold hover:text-gold-300 font-semibold text-xs pt-1 flex items-center gap-1"
-              >
-                View all 12 courses →
-              </Link>
-            </div>
+              <li className="pt-1">
+                <Link href="/courses" className="text-gold font-bold hover:underline inline-block">
+                  View All 12 Courses &rarr;
+                </Link>
+              </li>
+            </ul>
           </div>
 
-          {/* Col 4: Contact & Campus */}
-          <div className="space-y-4">
-            <h3 className="text-gold font-bold text-base uppercase tracking-wider font-heading flex items-center gap-2">
-              <span className="w-2 h-2 bg-gold rounded-full" />
-              Contact Us / رابطہ کی تفصیل
-            </h3>
-
-            <div className="space-y-3 text-xs sm:text-sm">
+          {/* Col 4: Contact Details */}
+          <div>
+            <h4 className="text-white font-extrabold font-heading text-sm uppercase tracking-wider mb-4 border-l-2 border-gold-brand pl-2.5">
+              Campus Contact
+            </h4>
+            <div className="space-y-3 text-xs">
               <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-gold flex-shrink-0 mt-1" />
-                <div>
-                  <strong className="text-white block font-medium">Campus Address:</strong>
-                  <span className="text-slate-400 text-xs">{INSTITUTE_INFO.address}</span>
-                  <span className="font-urdu block text-[11px] text-gold/80 mt-0.5" dir="rtl">{INSTITUTE_INFO.addressUrdu}</span>
-                </div>
+                <MapPin className="w-4 h-4 text-gold shrink-0 mt-0.5" />
+                <span className="text-slate-300">{INSTITUTE.address}</span>
               </div>
-
               <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-gold flex-shrink-0" />
+                <Phone className="w-4 h-4 text-gold shrink-0" />
                 <div>
-                  <strong className="text-white block font-medium">Landline:</strong>
-                  <a href={`tel:${INSTITUTE_INFO.phone.replace(/\s+/g, "")}`} className="hover:text-gold text-slate-300 text-xs">
-                    {INSTITUTE_INFO.phone}
+                  <p className="text-[10px] text-slate-400 uppercase">Landline (Kot Addu)</p>
+                  <a href={`tel:${INSTITUTE.phone}`} className="text-white font-bold hover:text-gold">
+                    {INSTITUTE.phone}
                   </a>
                 </div>
               </div>
-
-              <div className="flex items-start gap-2.5">
-                <MessageCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <strong className="text-white block font-medium">WhatsApp Rabta:</strong>
-                  <div className="flex flex-col gap-0.5 text-xs">
-                    <a
-                      href={`https://wa.me/${INSTITUTE_INFO.whatsapp1Clean}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-emerald-400 hover:text-emerald-300 font-medium"
-                    >
-                      {INSTITUTE_INFO.whatsapp1} (Primary)
-                    </a>
-                    <a
-                      href={`https://wa.me/${INSTITUTE_INFO.whatsapp2Clean}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-emerald-400 hover:text-emerald-300 font-medium"
-                    >
-                      {INSTITUTE_INFO.whatsapp2}
-                    </a>
-                  </div>
+              <div className="flex items-center gap-2.5">
+                <MessageCircle className="w-4 h-4 text-brandGreen shrink-0" />
+                <div>
+                  <p className="text-[10px] text-slate-400 uppercase">Primary WhatsApp</p>
+                  <a
+                    href={getWhatsAppUrl("Hello, I am contacting you from the official website.")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white font-bold hover:text-brandGreen"
+                  >
+                    {INSTITUTE.primaryWhatsApp}
+                  </a>
                 </div>
               </div>
-
               <div className="flex items-center gap-2.5">
-                <Clock className="w-4 h-4 text-gold flex-shrink-0" />
+                <MessageCircle className="w-4 h-4 text-brandGreen shrink-0" />
                 <div>
-                  <span className="text-slate-400 text-xs">{INSTITUTE_INFO.timing}</span>
+                  <p className="text-[10px] text-slate-400 uppercase">Secondary WhatsApp</p>
+                  <a
+                    href={`https://wa.me/${INSTITUTE.secondaryWhatsAppClean}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white font-bold hover:text-brandGreen"
+                  >
+                    {INSTITUTE.secondaryWhatsApp}
+                  </a>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom Copyright & Disclaimer */}
-        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 text-center sm:text-left">
-          <div>
-            <p>© {new Date().getFullYear()} {INSTITUTE_INFO.name}, Kot Addu. All Rights Reserved.</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">
-              Govt. Licence No: {INSTITUTE_INFO.licenceNo} • Trade Mark No: {INSTITUTE_INFO.tradeMarkNo} • Domain: {INSTITUTE_INFO.domain}
-            </p>
-          </div>
-          <div className="flex items-center gap-3 text-[11px] text-slate-400">
-            <span className="font-urdu" dir="rtl">فنی تربیت برائے باوقار مستقبل</span>
+        {/* Bottom Bar */}
+        <div className="mt-12 pt-6 border-t border-navy-800 text-center md:flex md:justify-between md:items-center text-xs text-slate-400">
+          <p>© {new Date().getFullYear()} {INSTITUTE.fullNameWithCity}. All rights reserved.</p>
+          <p className="mt-2 md:mt-0 flex items-center justify-center gap-2">
+            <span>Licence: {INSTITUTE.licenceNo}</span>
             <span>•</span>
-            <span className="text-gold">Kot Addu, Punjab, Pakistan</span>
-          </div>
+            <span>Trade Mark: {INSTITUTE.tradeMarkNo}</span>
+          </p>
         </div>
       </div>
     </footer>

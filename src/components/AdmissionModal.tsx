@@ -1,209 +1,206 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, Send, MessageCircle, AlertCircle, CheckCircle } from "lucide-react";
-import { COURSES, INSTITUTE_INFO } from "@/lib/constants";
+import { X, Send, CheckCircle2, ShieldCheck } from "lucide-react";
+import { useAdmissionModal } from "./AdmissionContext";
+import { COURSES } from "@/data/courses";
+import { INSTITUTE } from "@/data/institute";
+import { buildAdmissionMessage, getWhatsAppUrl } from "@/lib/utils";
 
-interface AdmissionModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  selectedCourse?: string;
-}
-
-export default function AdmissionModal({
-  isOpen,
-  onClose,
-  selectedCourse,
-}: AdmissionModalProps) {
-  const [name, setName] = useState("");
+export default function AdmissionModal() {
+  const { isOpen, selectedCourse, closeModal } = useAdmissionModal();
+  const [fullName, setFullName] = useState("");
   const [fatherName, setFatherName] = useState("");
   const [phone, setPhone] = useState("");
   const [cnic, setCnic] = useState("");
-  const [course, setCourse] = useState(selectedCourse || COURSES[0].name);
+  const [course, setCourse] = useState(selectedCourse || "Multi Welder");
   const [message, setMessage] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Sync course when selectedCourse changes from outside
+  React.useEffect(() => {
+    if (selectedCourse) {
+      setCourse(selectedCourse);
+    }
+  }, [selectedCourse]);
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!fullName || !phone || !course) return;
 
-    // Construct the WhatsApp message format specified in requirements
-    // No database storage is performed.
-    const text = 
-      `*Online Admission Form — Al-Muntazir Technical Training Center Kot Addu*\n\n` +
-      `*Student Name:* ${name.trim()}\n` +
-      `*Father Name:* ${fatherName.trim()}\n` +
-      `*Phone / Mobile:* ${phone.trim()}\n` +
-      `*CNIC / B-Form:* ${cnic.trim()}\n` +
-      `*Selected Course:* ${course}\n` +
-      (message.trim() ? `*Additional Message:* ${message.trim()}\n\n` : `\n`) +
-      `*Submission Date:* ${new Date().toLocaleDateString("en-PK")}`;
+    const formattedMessage = buildAdmissionMessage({
+      fullName,
+      fatherName,
+      phone,
+      cnic,
+      course,
+      message,
+    });
 
-    const url = `https://wa.me/${INSTITUTE_INFO.whatsapp1Clean}?text=${encodeURIComponent(text)}`;
+    const whatsappUrl = getWhatsAppUrl(formattedMessage, INSTITUTE.primaryWhatsAppClean);
+    setIsSubmitted(true);
 
-    setSubmitted(true);
+    // Open WhatsApp in new tab
+    window.open(whatsappUrl, "_blank");
+
     setTimeout(() => {
-      window.open(url, "_blank");
-      onClose();
-      setSubmitted(false);
-    }, 600);
+      setIsSubmitted(false);
+      closeModal();
+      setFullName("");
+      setFatherName("");
+      setPhone("");
+      setCnic("");
+      setMessage("");
+    }, 1500);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border-2 border-gold/40 overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Header */}
-        <div className="bg-navy px-6 py-4 text-white flex items-center justify-between border-b-2 border-gold">
+      <div
+        className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden border border-gold-border/60"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Top Header Strip */}
+        <div className="bg-navy-900 px-6 py-5 text-white relative border-b-2 border-gold-brand flex items-center justify-between">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-gold animate-pulse" />
-              <h2 className="text-lg font-bold font-heading text-white">Online Admission Form</h2>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-block px-2 py-0.5 text-[11px] font-extrabold uppercase tracking-wider rounded bg-gold-gradient text-navy-950">
+                Official Application
+              </span>
+              <span className="text-xs text-slate-300">Licence #{INSTITUTE.licenceNo}</span>
             </div>
-            <p className="font-urdu text-xs text-gold-300 mt-0.5" dir="rtl">
-              آن لائن داخلہ فارم — المنتظر ٹیکنیکل ٹریننگ سینٹر
+            <h3 className="text-xl font-extrabold font-heading text-white tracking-tight">
+              Apply for Admission
+            </h3>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Submit your inquiry directly to our official admissions desk on WhatsApp.
             </p>
           </div>
           <button
-            onClick={onClose}
-            className="p-1 rounded-lg text-slate-300 hover:text-white hover:bg-navy-800 transition-colors"
+            onClick={closeModal}
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-slate-200 transition-colors"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-4">
-          <div className="bg-gold-50 border border-gold-200 rounded-lg p-3 text-xs text-navy-900 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-gold-700 flex-shrink-0 mt-0.5" />
+        {/* Modal Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <p className="font-semibold text-navy-900">
-                Direct WhatsApp Submission:
-              </p>
-              <p className="text-slate-600">
-                Form submit karte hi aapki details WhatsApp par hamare admission desk (+92 315 4037212) par send ho jayengi.
-              </p>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-3.5 text-xs sm:text-sm">
-            {/* Student Name */}
-            <div>
-              <label className="block font-semibold text-navy mb-1">
-                Student Name / طالب علم کا نام <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-navy-800 uppercase tracking-wider mb-1">
+                Student Full Name *
               </label>
               <input
                 type="text"
                 required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Muhammad Rizwan"
-                className="w-full px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-gold focus:border-navy text-slate-900"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="e.g. Talha Hussain"
+                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-gold-brand focus:ring-2 focus:ring-gold-brand/20 outline-none transition"
               />
             </div>
-
-            {/* Father's Name */}
             <div>
-              <label className="block font-semibold text-navy mb-1">
-                Father's Name / والد کا نام <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-navy-800 uppercase tracking-wider mb-1">
+                Father&apos;s Name *
               </label>
               <input
                 type="text"
                 required
                 value={fatherName}
                 onChange={(e) => setFatherName(e.target.value)}
-                placeholder="e.g. Ghulam Shabbir"
-                className="w-full px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-gold focus:border-navy text-slate-900"
+                placeholder="e.g. Ghulam Hussain"
+                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-gold-brand focus:ring-2 focus:ring-gold-brand/20 outline-none transition"
               />
             </div>
+          </div>
 
-            {/* Phone & CNIC Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block font-semibold text-navy mb-1">
-                  Mobile / WhatsApp <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="0315XXXXXXX"
-                  className="w-full px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-gold focus:border-navy text-slate-900"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-navy mb-1">
-                  CNIC / B-Form Number <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={cnic}
-                  onChange={(e) => setCnic(e.target.value)}
-                  placeholder="32304-XXXXXXX-X"
-                  className="w-full px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-gold focus:border-navy text-slate-900"
-                />
-              </div>
-            </div>
-
-            {/* Course Dropdown */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold text-navy mb-1">
-                Select Course / ٹریڈ منتخب کریں <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold text-navy-800 uppercase tracking-wider mb-1">
+                Mobile / WhatsApp *
               </label>
-              <select
-                value={course}
-                onChange={(e) => setCourse(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-gold focus:border-navy text-slate-900 bg-white"
-              >
-                {COURSES.map((c) => (
-                  <option key={c.id} value={c.name}>
-                    {c.name} — ({c.duration})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Optional Message */}
-            <div>
-              <label className="block font-semibold text-navy mb-1">
-                Message / کوئی سوال یا وضاحت (Optional)
-              </label>
-              <textarea
-                rows={2}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Koi sawal ya information jo aap poochna chahein..."
-                className="w-full px-3.5 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-gold focus:border-navy text-slate-900"
+              <input
+                type="tel"
+                required
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="e.g. 03154037212"
+                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-gold-brand focus:ring-2 focus:ring-gold-brand/20 outline-none transition"
               />
             </div>
-
-            {/* Submit Button */}
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={submitted}
-                className="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold flex items-center justify-center gap-2 shadow-lg transition-all transform hover:scale-[1.01] active:scale-[0.99] text-sm"
-              >
-                {submitted ? (
-                  <>
-                    <CheckCircle className="w-5 h-5 text-white animate-bounce" />
-                    <span>Opening WhatsApp...</span>
-                  </>
-                ) : (
-                  <>
-                    <MessageCircle className="w-5 h-5" />
-                    <span>Submit & Send via WhatsApp (+92 315 4037212)</span>
-                    <Send className="w-4 h-4 ml-1" />
-                  </>
-                )}
-              </button>
+            <div>
+              <label className="block text-xs font-bold text-navy-800 uppercase tracking-wider mb-1">
+                CNIC Number (Optional)
+              </label>
+              <input
+                type="text"
+                value={cnic}
+                onChange={(e) => setCnic(e.target.value)}
+                placeholder="e.g. 36302-2480530-9"
+                className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-gold-brand focus:ring-2 focus:ring-gold-brand/20 outline-none transition"
+              />
             </div>
-          </form>
-        </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-navy-800 uppercase tracking-wider mb-1">
+              Select Technical Course *
+            </label>
+            <select
+              value={course}
+              onChange={(e) => setCourse(e.target.value)}
+              className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 focus:border-gold-brand focus:ring-2 focus:ring-gold-brand/20 outline-none transition bg-white font-medium text-navy-900"
+            >
+              {COURSES.map((c) => (
+                <option key={c.id} value={c.name}>
+                  {c.name} — {c.duration}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-navy-800 uppercase tracking-wider mb-1">
+              Questions or Notes (Optional)
+            </label>
+            <textarea
+              rows={2}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="e.g. Inquiring about next batch start date or practical workshop timings"
+              className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:border-gold-brand focus:ring-2 focus:ring-gold-brand/20 outline-none transition resize-none"
+            />
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={isSubmitted}
+              className="w-full py-3 px-4 rounded-xl gold-gradient-btn flex items-center justify-center gap-2 text-sm font-extrabold uppercase tracking-wider shadow-lg transition active:scale-[0.98]"
+            >
+              {isSubmitted ? (
+                <>
+                  <CheckCircle2 className="w-5 h-5 text-emerald-800 animate-bounce" />
+                  <span>Connecting to WhatsApp...</span>
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 text-navy-900" />
+                  <span>Submit Admission Form via WhatsApp</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div className="flex items-center justify-center gap-2 text-[11px] text-slate-500 pt-1">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>Direct WhatsApp transmission to +92 315 4037212. Zero database storage.</span>
+          </div>
+        </form>
       </div>
     </div>
   );

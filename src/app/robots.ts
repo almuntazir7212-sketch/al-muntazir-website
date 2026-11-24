@@ -1,15 +1,17 @@
 import { MetadataRoute } from "next";
-import { INSTITUTE_INFO } from "@/lib/constants";
+import { INSTITUTE } from "@/data/institute";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = `https://${INSTITUTE_INFO.domain}`;
+  const baseUrl = `https://${INSTITUTE.domain}`;
 
   return {
-    rules: {
-      userAgent: "*",
-      allow: ["/", "/courses", "/about", "/contact"],
-      disallow: ["/verify/", "/api/"],
-    },
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/verify/"],
+      },
+    ],
     sitemap: `${baseUrl}/sitemap.xml`,
   };
 }

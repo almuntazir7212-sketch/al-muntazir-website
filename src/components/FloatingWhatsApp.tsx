@@ -1,49 +1,57 @@
 "use client";
 
-import React, { useState } from "react";
-import { MessageCircle, X } from "lucide-react";
-import { INSTITUTE_INFO } from "@/lib/constants";
+import React, { useState, useEffect } from "react";
+import { MessageCircle } from "lucide-react";
+import { INSTITUTE } from "@/data/institute";
+import { getWhatsAppUrl } from "@/lib/utils";
 
 export default function FloatingWhatsApp() {
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+
+    const handleScroll = () => {
+      setIsScrolling(true);
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 500); // 500ms after scrolling stops, return to bottom-right
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
+
+  const whatsappUrl = getWhatsAppUrl(
+    "Hello! I am visiting the Al-Muntazir Technical Training Center website and would like to ask a question.",
+    INSTITUTE.primaryWhatsAppClean
+  );
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2">
-      {/* Tooltip on hover / small screen */}
-      {showTooltip && (
-        <div className="bg-navy-900 text-white text-xs py-2 px-3.5 rounded-lg shadow-xl border border-gold/40 flex items-center gap-2 animate-fadeIn max-w-[210px]">
-          <div className="space-y-0.5 text-left">
-            <p className="font-semibold text-gold">Admission Inquiry?</p>
-            <p className="font-urdu text-[11px] text-slate-200" dir="rtl">
-              واٹس ایپ پر فوری رابطہ کریں
-            </p>
-          </div>
-          <button
-            onClick={() => setShowTooltip(false)}
-            className="text-slate-400 hover:text-white p-0.5"
-            aria-label="Close message"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
-
-      {/* Floating Button */}
+    <aside
+      aria-label="Contact options"
+      className={`fixed bottom-5 z-40 transition-all duration-500 ease-out ${
+        isScrolling
+          ? "left-4 sm:left-6 bottom-5 translate-x-0"
+          : "right-4 sm:right-6 bottom-5 translate-x-0"
+      }`}
+    >
       <a
-        href={`https://wa.me/${INSTITUTE_INFO.whatsapp1Clean}?text=${encodeURIComponent(
-          "Assalam o Alaikum! Mujhe Al-Muntazir Technical Training Center Kot Addu ke courses aur admission ke bare mein maloomat chahiye."
-        )}`}
+        href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        onMouseEnter={() => setShowTooltip(true)}
-        className="group relative flex items-center justify-center w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white shadow-xl hover:shadow-2xl transition-all transform hover:scale-110 active:scale-95 border-2 border-white focus:outline-none focus:ring-4 focus:ring-emerald-300"
-        aria-label="Chat on WhatsApp +92 315 4037212"
+        aria-label="Chat with Admissions on WhatsApp"
+        className="group flex items-center gap-2.5 p-3 sm:px-4 sm:py-3 rounded-full bg-brandGreen text-white font-bold text-xs sm:text-sm shadow-xl hover:bg-brandGreen-hover hover:scale-105 active:scale-95 transition-all duration-300 border-2 border-white/30"
       >
-        {/* Pulsing ring */}
-        <span className="absolute -inset-1 rounded-full bg-emerald-400 opacity-40 animate-ping group-hover:opacity-60" />
-
-        <MessageCircle className="w-8 h-8 relative z-10 fill-current" />
+        <MessageCircle className="w-6 h-6 animate-pulse" />
+        <span className="hidden sm:inline font-extrabold tracking-wide drop-shadow-sm">
+          WhatsApp Admission Desk
+        </span>
       </a>
-    </div>
+    </aside>
   );
 }

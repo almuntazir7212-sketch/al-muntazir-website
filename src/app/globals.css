@@ -1,65 +1,80 @@
-@import url('https://fonts.googleapis.com/css2?family=Gulzar&family=Inter:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --navy: #0B2C4D;
-  --gold: #B08D2A;
-  --background: #FFFFFF;
-  --foreground: #0B2C4D;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Urdu typography helper */
-.font-urdu {
-  font-family: 'Noto Nastaliq Urdu', 'Gulzar', 'Jameel Noori Nastaleeq', serif;
-  line-height: 1.8;
-}
-
-/* Certificate Typography specific to V12 template */
-.font-cert-times {
-  font-family: 'Times New Roman', Times, 'Liberation Serif', serif;
-}
-
-.font-cert-helvetica {
-  font-family: Arial, Helvetica, 'Liberation Sans', sans-serif;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.98);
+@layer base {
+  :root {
+    --primary-navy: #0B2C4D;
+    --navy-dark: #071d33;
+    --brand-gold: #B08D2A;
+    --accent-gold-light: #f2d67c;
+    --accent-gold-mid: #e3b93e;
+    --accent-gold-dark: #c79a2e;
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 
-.animate-fadeIn {
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* Print optimizations for Certificate */
-@media print {
-  header, footer, .no-print {
-    display: none !important;
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-manrope), system-ui, sans-serif;
+    color: #1e293b;
+    background-color: #ffffff;
   }
+
   body {
-    background: white !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    overflow-x: hidden;
   }
-  .print-only {
-    display: block !important;
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-archivo), system-ui, sans-serif;
   }
+}
+
+/* Custom Gold Shimmer and VIP borders */
+.gold-gradient-btn {
+  background: linear-gradient(135deg, #f2d67c 0%, #e3b93e 50%, #c79a2e 100%);
+  color: #0B2C4D;
+  font-weight: 800;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 4px 14px rgba(227, 185, 62, 0.35);
+}
+
+.gold-gradient-btn:hover {
+  background: linear-gradient(135deg, #fae298 0%, #ecc44f 50%, #d8ab36 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(227, 185, 62, 0.45);
+}
+
+.gold-border-card {
+  border-top: 4px solid #B08D2A;
+  background-color: #ffffff;
+  box-shadow: 0 10px 30px -5px rgba(11, 44, 77, 0.08), 0 4px 10px -2px rgba(176, 141, 42, 0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gold-border-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(11, 44, 77, 0.15), 0 8px 18px -4px rgba(176, 141, 42, 0.2);
+}
+
+.gold-badge {
+  background: linear-gradient(135deg, #fdf8eb 0%, #f7eccb 100%);
+  border: 1px solid #e3b93e;
+  color: #8c6a15;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #B08D2A;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94741f;
 }

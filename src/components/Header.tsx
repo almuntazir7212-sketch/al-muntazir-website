@@ -1,174 +1,157 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Phone, MessageCircle, Menu, X, Award, MapPin } from "lucide-react";
-import Logo from "./Logo";
-import { INSTITUTE_INFO } from "@/lib/constants";
-import AdmissionModal from "./AdmissionModal";
+import { Phone, MessageCircle, Menu, X, ShieldCheck } from "lucide-react";
+import { INSTITUTE } from "@/data/institute";
+import { getWhatsAppUrl } from "@/lib/utils";
 
 export default function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [admissionModalOpen, setAdmissionModalOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 15);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navLinks = [
-    { name: "Home", urdu: "ہوم", href: "/" },
-    { name: "Courses", urdu: "کورسز", href: "/courses" },
-    { name: "About / Bharosa", urdu: "ہمارے بارے میں", href: "/about" },
-    { name: "Contact", urdu: "رابطہ", href: "/contact" },
+    { label: "Home", href: "/" },
+    { label: "Courses", href: "/courses" },
+    { label: "About Us", href: "/about" },
+    { label: "Contact", href: "/contact" },
   ];
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
-
   return (
-    <>
-      <header className="sticky top-0 z-40 w-full bg-navy border-b border-navy-700 shadow-lg">
-        {/* Top Info Strip */}
-        <div className="bg-navy-950 text-slate-300 text-xs py-1.5 px-4 sm:px-6 border-b border-navy-800">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-4 text-[11px] sm:text-xs">
-              <span className="flex items-center gap-1.5 text-gold-300">
-                <MapPin className="w-3.5 h-3.5 text-gold" />
-                <span className="hidden sm:inline">88 Road, Near Benazir Office,</span> Kot Addu
-              </span>
-              <span className="hidden md:flex items-center gap-1 text-slate-300 border-l border-navy-700 pl-4">
-                <Award className="w-3.5 h-3.5 text-gold" />
-                Licence: <strong className="text-white ml-0.5">{INSTITUTE_INFO.licenceNo}</strong>
-              </span>
-              <span className="hidden lg:flex items-center gap-1 text-slate-300 border-l border-navy-700 pl-4">
-                Trade Mark No: <strong className="text-white ml-0.5">{INSTITUTE_INFO.tradeMarkNo}</strong>
+    <header
+      className={`sticky top-0 z-40 w-full transition-all duration-300 ${
+        isScrolled
+          ? "bg-navy-950/95 backdrop-blur-md shadow-lg border-b border-gold-brand/40 py-2.5"
+          : "bg-navy-900 border-b border-gold-brand/30 py-3"
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-2 lg:gap-4">
+          {/* Logo & Institute Name: strictly single line, VIP style */}
+          <Link
+            href="/"
+            className="flex items-center gap-2 sm:gap-2.5 shrink min-w-0 group focus:outline-none"
+            title={INSTITUTE.fullNameWithCity}
+          >
+            <div className="relative w-10 h-10 sm:w-11 sm:h-11 rounded-full overflow-hidden border-2 border-gold-brand shadow-md bg-white shrink-0">
+              <Image
+                src="/images/logo.png"
+                alt="Al-Muntazir Logo"
+                fill
+                sizes="(max-width: 640px) 40px, 44px"
+                className="object-contain"
+                priority
+              />
+            </div>
+            <div className="whitespace-nowrap overflow-hidden min-w-0">
+              <span className="block text-xs sm:text-sm md:text-base lg:text-lg font-black font-heading tracking-tight text-white group-hover:text-gold transition-colors truncate">
+                Al-Muntazir
+                <span className="text-gold-light font-normal text-xs sm:text-sm md:text-base ml-1.5">
+                  Technical Training &amp; Trade Center
+                </span>
               </span>
             </div>
-
-            <div className="flex items-center gap-3 sm:gap-4 text-[11px] sm:text-xs">
-              <a
-                href={`tel:${INSTITUTE_INFO.phone.replace(/\s+/g, "")}`}
-                className="flex items-center gap-1 hover:text-gold transition-colors font-semibold text-white"
-              >
-                <Phone className="w-3.5 h-3.5 text-gold" />
-                <span>{INSTITUTE_INFO.phone}</span>
-              </a>
-              <a
-                href={`https://wa.me/${INSTITUTE_INFO.whatsapp1Clean}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors font-medium border-l border-navy-700 pl-3"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">WhatsApp:</span>
-                <span>{INSTITUTE_INFO.whatsapp1}</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Navigation Bar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3.5 flex items-center justify-between gap-4">
-          {/* Logo Placeholder / Brand */}
-          <Link href="/" className="hover:opacity-95 transition-opacity">
-            <Logo size={46} showText={true} lightText={true} />
           </Link>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
+          {/* Desktop Navigation: items strictly on ONE line, never wrapped */}
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8 shrink-0">
             {navLinks.map((link) => {
-              const active = isActive(link.href);
+              const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-all flex flex-col items-center ${
-                    active
-                      ? "bg-navy-700 text-gold shadow-inner border border-gold/30 font-semibold"
-                      : "text-slate-100 hover:text-gold hover:bg-navy-800"
+                  className={`text-sm font-bold tracking-wide transition-colors whitespace-nowrap ${
+                    isActive
+                      ? "text-gold border-b-2 border-gold pb-0.5"
+                      : "text-slate-200 hover:text-gold"
                   }`}
                 >
-                  <span>{link.name}</span>
-                  <span className="font-urdu text-[11px] -mt-0.5 opacity-80" dir="rtl">{link.urdu}</span>
+                  {link.label}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Right Action Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Gold Admission Open Badge/Button */}
-            <button
-              onClick={() => setAdmissionModalOpen(true)}
-              className="relative group bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-navy-950 font-bold px-3.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm shadow-gold-glow flex items-center gap-1.5 transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+          {/* Header Action Buttons: Standard Blue Call + Green WhatsApp */}
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            {/* Standard Blue Call Button */}
+            <a
+              href={`tel:${INSTITUTE.phone}`}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-brandBlue hover:bg-brandBlue-hover text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 whitespace-nowrap"
+              title="Call Kot Addu Landline"
             >
-              <span className="w-2 h-2 rounded-full bg-emerald-700 animate-ping" />
-              <span>Admission Open</span>
-              <span className="font-urdu text-xs font-semibold mr-0.5" dir="rtl">داخلہ جاری</span>
-            </button>
+              <Phone className="w-3.5 h-3.5" />
+              <span>Call</span>
+            </a>
 
-            {/* Mobile Menu Button */}
+            {/* Standard Green WhatsApp Button */}
+            <a
+              href={getWhatsAppUrl("Hello, I would like to inquire about admissions at Al-Muntazir Technical Training Center.")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-brandGreen hover:bg-brandGreen-hover text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 whitespace-nowrap"
+              title="Chat on WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>WhatsApp</span>
+            </a>
+
+            {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-slate-200 hover:text-gold rounded-lg hover:bg-navy-800 transition-colors"
-              aria-label="Toggle navigation menu"
+              className="lg:hidden p-1.5 rounded-lg text-slate-200 hover:text-gold hover:bg-navy-800 transition"
+              aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Dropdown Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-navy-900 border-t border-navy-700 px-4 pt-3 pb-5 space-y-2 animate-fadeIn">
-            <div className="space-y-1">
-              {navLinks.map((link) => {
-                const active = isActive(link.href);
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-medium ${
-                      active
-                        ? "bg-navy-700 text-gold border-l-4 border-gold"
-                        : "text-slate-200 hover:bg-navy-800 hover:text-gold"
-                    }`}
-                  >
-                    <span>{link.name}</span>
-                    <span className="font-urdu text-xs text-gold/80" dir="rtl">{link.urdu}</span>
-                  </Link>
-                );
-              })}
-            </div>
-
-            <div className="pt-3 border-t border-navy-800 space-y-2">
-              <a
-                href={`tel:${INSTITUTE_INFO.phone.replace(/\s+/g, "")}`}
-                className="w-full flex items-center justify-center gap-2 bg-navy-800 text-white hover:text-gold px-4 py-2.5 rounded-lg text-sm font-semibold border border-navy-700"
-              >
-                <Phone className="w-4 h-4 text-gold" />
-                <span>Call: {INSTITUTE_INFO.phone}</span>
-              </a>
-              <a
-                href={`https://wa.me/${INSTITUTE_INFO.whatsapp1Clean}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>WhatsApp: {INSTITUTE_INFO.whatsapp1}</span>
-              </a>
-            </div>
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden bg-navy-950 border-t border-gold-brand/40 px-4 pt-3 pb-5 space-y-3 animate-fadeIn">
+          <div className="flex flex-col space-y-1">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`px-3 py-2.5 rounded-lg text-sm font-bold transition ${
+                    isActive
+                      ? "bg-navy-800 text-gold font-extrabold"
+                      : "text-slate-200 hover:bg-navy-900 hover:text-gold"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
-        )}
-      </header>
 
-      {/* Online Admission Modal */}
-      <AdmissionModal
-        isOpen={admissionModalOpen}
-        onClose={() => setAdmissionModalOpen(false)}
-      />
-    </>
+          <div className="pt-2 border-t border-navy-800/80 flex items-center justify-between text-xs text-slate-400 px-2">
+            <span className="flex items-center gap-1.5 text-slate-300">
+              <ShieldCheck className="w-4 h-4 text-gold" />
+              Licence No: {INSTITUTE.licenceNo}
+            </span>
+            <span className="text-slate-400">Trade Mark: {INSTITUTE.tradeMarkNo}</span>
+          </div>
+        </div>
+      )}
+    </header>
   );
 }

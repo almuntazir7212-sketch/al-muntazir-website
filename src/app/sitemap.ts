@@ -1,31 +1,32 @@
 import { MetadataRoute } from "next";
-import { INSTITUTE_INFO } from "@/lib/constants";
+import { INSTITUTE } from "@/data/institute";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = `https://${INSTITUTE_INFO.domain}`;
+  const baseUrl = `https://${INSTITUTE.domain}`;
+  const now = new Date();
 
   return [
     {
-      url: `${baseUrl}/`,
-      lastModified: new Date(),
+      url: `${baseUrl}`,
+      lastModified: now,
       changeFrequency: "weekly",
       priority: 1.0,
     },
     {
       url: `${baseUrl}/courses`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
     },
     {
       url: `${baseUrl}/about`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${baseUrl}/contact`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
